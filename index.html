@@ -116,36 +116,18 @@ img { max-width: 100%; }
 }
 .hero-bg {
   position: absolute; inset: 0; z-index: 0;
-  /* Simulating blue-hour courtyard rendering */
   background:
-    radial-gradient(ellipse at 30% 40%, rgba(107,127,94,0.2) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 60%, rgba(184,115,51,0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 30% 40%, rgba(107,127,94,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 60%, rgba(184,115,51,0.06) 0%, transparent 40%),
     linear-gradient(180deg,
-      rgba(17,27,46,0.4) 0%,
-      rgba(28,39,63,0.65) 40%,
-      var(--jh-navy) 100%
+      rgba(17,27,46,0.3) 0%,
+      rgba(28,39,63,0.55) 40%,
+      rgba(28,39,63,0.85) 100%
     ),
-    linear-gradient(135deg, #5a6e4e 0%, #4a5e42 25%, #3d5038 50%, #2d3f28 100%);
+    url('img/hero-evening.jpg') center/cover no-repeat;
 }
-.hero-bg::before {
-  content: '';
-  position: absolute; inset: 0;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      transparent, transparent 120px,
-      rgba(255,255,255,0.008) 120px,
-      rgba(255,255,255,0.008) 121px
-    );
-}
-.hero-bg::after {
-  content: '[ Courtyard rendering — blue hour ]';
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 13px; color: rgba(255,255,255,0.15);
-  font-family: 'DM Sans', sans-serif;
-  letter-spacing: 2px;
-}
+/* hero-bg::before removed — real photo doesn't need simulated lines */
+/* hero-bg::after removed — real image in use */
 /* Grain */
 .grain {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
@@ -872,11 +854,11 @@ img { max-width: 100%; }
 <section class="gallery" id="gallery">
   <div class="gallery-label"><span>Gallery</span></div>
   <div class="gallery-grid">
-    <div class="gallery-item">[ Courtyard rendering ]<div class="gallery-caption">Open-air courtyard</div></div>
-    <div class="gallery-item">[ Interior rendering ]<div class="gallery-caption">Covered pavilion</div></div>
-    <div class="gallery-item">[ Evening exterior ]<div class="gallery-caption">Blue hour view</div></div>
-    <div class="gallery-item">[ Floor plan ]<div class="gallery-caption">Site layout</div></div>
-    <div class="gallery-item">[ Construction ]<div class="gallery-caption">Progress — 2026</div></div>
+    <div class="gallery-item"><img src="img/gallery-interior-courtyard.jpg" alt="Interior courtyard with trees, communal tables, and pendant lighting" loading="lazy"><div class="gallery-caption">Open-air courtyard</div></div>
+    <div class="gallery-item"><img src="img/gallery-east-front.jpg" alt="East perspective rendering showing front entrance and signage" loading="lazy"><div class="gallery-caption">East perspective</div></div>
+    <div class="gallery-item"><img src="img/gallery-southeast-corner.jpg" alt="Southeast corner with bike racks, trees, and pedestrian activity" loading="lazy"><div class="gallery-caption">Southeast corner</div></div>
+    <div class="gallery-item"><img src="img/floor-plan.jpg" alt="Ground floor layout showing all suites, courtyard, and amenities" loading="lazy"><div class="gallery-caption">Site layout</div></div>
+    <div class="gallery-item"><img src="img/gallery-south-jefferson.jpg" alt="South perspective from Jefferson Street showing full facade" loading="lazy"><div class="gallery-caption">South from Jefferson St</div></div>
   </div>
 </section>
 
@@ -889,7 +871,7 @@ img { max-width: 100%; }
   </div>
   <div class="space-grid">
     <div class="space-card">
-      <div class="space-photo">[ Suite photo ]</div>
+      <div class="space-photo"><img src="img/gallery-south-jefferson.jpg" alt="Restaurant suites with outdoor dining along Jefferson Street" loading="lazy"></div>
       <div class="space-info">
         <div class="space-type">Restaurant</div>
         <h3 class="space-name">Suites A1, A2, A3</h3>
@@ -911,7 +893,7 @@ img { max-width: 100%; }
       </div>
     </div>
     <div class="space-card">
-      <div class="space-photo">[ Suite photo ]</div>
+      <div class="space-photo"><img src="img/gallery-southeast-corner.jpg" alt="Retail storefronts with pedestrian walkways and landscaping" loading="lazy"></div>
       <div class="space-info">
         <div class="space-type">Retail</div>
         <h3 class="space-name">Suites B1 — R440</h3>
@@ -940,7 +922,9 @@ img { max-width: 100%; }
 
 <!-- ABOUT -->
 <section class="about" id="about">
-  <div class="about-image" role="img" aria-label="Interior rendering with trees, communal tables, and warm lighting">[ Interior rendering ]</div>
+  <div class="about-image" role="img" aria-label="Interior rendering with trees, communal tables, and warm lighting">
+    <img src="img/gallery-interior-courtyard.jpg" alt="Interior courtyard with mature trees, communal picnic tables, and pendant lighting" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+  </div>
   <div class="about-text">
     <div class="about-label">Our Story</div>
     <h2 class="about-title">Bringing together emerging talent and established creative forerunners</h2>
