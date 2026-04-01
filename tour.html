@@ -288,6 +288,51 @@
       0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
       50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
     }
+
+    /* Controls Guide */
+    #controls-guide {
+      position: fixed; bottom: 80px; right: 20px; z-index: 55;
+      background: rgba(28,39,63,0.92);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(184,115,51,0.2);
+      border-radius: 8px; padding: 16px 20px;
+      font-size: 12px; color: var(--sand);
+      opacity: 0; transition: opacity 0.5s ease;
+      pointer-events: none; max-width: 220px;
+    }
+    #controls-guide.visible { opacity: 1; pointer-events: auto; }
+    .guide-title {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--copper); margin-bottom: 10px;
+    }
+    .guide-row {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 6px;
+    }
+    .guide-row:last-child { margin-bottom: 0; }
+    .guide-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: var(--cream);
+      background: rgba(255,255,255,0.08);
+      padding: 2px 6px; border-radius: 3px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .guide-action { color: var(--sand); opacity: 0.7; font-size: 11px; }
+    .guide-dismiss {
+      display: block; margin-top: 10px; padding-top: 8px;
+      border-top: 1px solid rgba(184,115,51,0.15);
+      font-size: 10px; color: var(--copper); opacity: 0.6;
+      text-align: center; cursor: pointer;
+    }
+    .guide-dismiss:hover { opacity: 1; }
+    @media (max-width: 768px) {
+      #controls-guide {
+        bottom: 70px; right: 10px; left: 10px;
+        max-width: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -340,6 +385,13 @@
     <a href="/apply" class="panel-cta" id="panel-cta">Inquire About This Space</a>
   </div>
 
+  <!-- Controls Guide -->
+  <div id="controls-guide">
+    <div class="guide-title" id="guide-title">Tour Controls</div>
+    <div id="guide-content"></div>
+    <div class="guide-dismiss" onclick="document.getElementById('controls-guide').classList.remove('visible')">Click to dismiss</div>
+  </div>
+
   <!-- Scripts -->
   <script type="importmap">
   {
@@ -354,9 +406,8 @@
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-    import TWEEN from 'https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@25/dist/tween.esm.js';
 
-    // WebGL Check
+    // ── WebGL Check ──
     const testCanvas = document.createElement('canvas');
     const gl = testCanvas.getContext('webgl2') || testCanvas.getContext('webgl');
     if (!gl) {
@@ -365,7 +416,7 @@
       throw new Error('WebGL not supported');
     }
 
-    // DOM refs
+    // ── DOM refs ──
     const container = document.getElementById('canvas-container');
     const loadingEl = document.getElementById('loading');
     const loadingBar = document.getElementById('loading-bar');
@@ -374,8 +425,11 @@
     const stopLabel = document.getElementById('stop-label');
     const infoPanel = document.getElementById('info-panel');
     const hotspotLayer = document.getElementById('hotspot-layer');
+    const controlsGuide = document.getElementById('controls-guide');
+    const guideTitle = document.getElementById('guide-title');
+    const guideContent = document.getElementById('guide-content');
 
-    // Scene
+    // ── Scene ──
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000);
 
@@ -390,111 +444,123 @@
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
-
+    // ── Lighting ──
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
     const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
     dirLight.position.set(50, 80, 50);
-    dirLight.castShadow = false;
     scene.add(dirLight);
-
     const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
     fillLight.position.set(-30, 20, -30);
     scene.add(fillLight);
 
-    // Controls (starts disabled, enabled after load)
+    // ── Controls ──
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.minDistance = 5;
-    controls.maxDistance = 200;
+    controls.maxDistance = 500;
     controls.maxPolarAngle = Math.PI / 2.05;
     controls.enabled = false;
 
-    // Tour Stop Data — positions use unit fractions, scaled to model after load.
-    // angle: orbit angle in degrees around Y axis
-    // dist: distance from center as fraction of maxDim (1.0 = full view)
-    // height: camera Y as fraction of model height
-    // lookY: lookAt Y as fraction of model height
-    // offsetX/offsetZ: shift lookAt target as fraction of model width/depth
+    // ══════════════════════════════════════════════
+    // ── Simple Camera Animation (no TWEEN dependency) ──
+    // ══════════════════════════════════════════════
+    let cameraAnim = null;
+
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    function lerpVec(a, b, t) {
+      return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, z: a.z + (b.z - a.z) * t };
+    }
+
+    function animateCamera(targetPos, targetLookAt, duration = 1500, onComplete) {
+      controls.enabled = false;
+      const startPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+      const startTarget = { x: controls.target.x, y: controls.target.y, z: controls.target.z };
+      const startTime = performance.now();
+
+      cameraAnim = { startPos, startTarget, targetPos, targetLookAt, startTime, duration, onComplete };
+    }
+
+    function updateCameraAnim() {
+      if (!cameraAnim) return;
+      const elapsed = performance.now() - cameraAnim.startTime;
+      const raw = Math.min(elapsed / cameraAnim.duration, 1);
+      const t = easeInOutCubic(raw);
+
+      const pos = lerpVec(cameraAnim.startPos, cameraAnim.targetPos, t);
+      const look = lerpVec(cameraAnim.startTarget, cameraAnim.targetLookAt, t);
+
+      camera.position.set(pos.x, pos.y, pos.z);
+      controls.target.set(look.x, look.y, look.z);
+
+      if (raw >= 1) {
+        const cb = cameraAnim.onComplete;
+        cameraAnim = null;
+        if (cb) cb();
+        if (!isTourMode) controls.enabled = true;
+      }
+    }
+
+    // ══════════════════════════════════════════════
+    // ── Tour Stop Data ──
+    // ══════════════════════════════════════════════
     const TOUR_STOPS_RAW = [
       {
-        id: 'exterior',
-        label: 'Exterior View',
-        sub: 'Full Building',
+        id: 'exterior', label: 'Exterior View', sub: 'Full Building',
         angle: 135, dist: 1.5, height: 0.6, lookY: 0.15,
-        offsetX: 0, offsetZ: 0,
-        suite: null
+        offsetX: 0, offsetZ: 0, suite: null
       },
       {
-        id: 'courtyard',
-        label: 'Entrance & Courtyard',
-        sub: 'Shared Areas',
-        angle: 90, dist: 0.8, height: 0.35, lookY: 0.1,
-        offsetX: 0, offsetZ: 0,
-        suite: null
+        id: 'courtyard', label: 'Entrance & Courtyard', sub: 'Shared Areas',
+        angle: 0, dist: 0.7, height: 0.3, lookY: 0.1,
+        offsetX: 0, offsetZ: 0.1, suite: null
       },
       {
-        id: 'a1',
-        label: 'Suite A1',
-        sub: 'Restaurant · 640 SF',
-        angle: 200, dist: 0.5, height: 0.25, lookY: 0.08,
-        offsetX: -0.25, offsetZ: 0.2,
+        id: 'a1', label: 'Suite A1', sub: 'Restaurant · 640 SF',
+        angle: 200, dist: 0.55, height: 0.2, lookY: 0.08,
+        offsetX: -0.3, offsetZ: 0.25,
         suite: { type: 'Restaurant · 640 SF', title: 'Suite A1', status: 'available', images: [] }
       },
       {
-        id: 'a2',
-        label: 'Suite A2',
-        sub: 'Restaurant · 640 SF',
-        angle: 230, dist: 0.5, height: 0.25, lookY: 0.08,
-        offsetX: -0.25, offsetZ: 0,
+        id: 'a2', label: 'Suite A2', sub: 'Restaurant · 640 SF',
+        angle: 240, dist: 0.55, height: 0.2, lookY: 0.08,
+        offsetX: -0.3, offsetZ: 0,
         suite: { type: 'Restaurant · 640 SF', title: 'Suite A2', status: 'available', images: [] }
       },
       {
-        id: 'a3',
-        label: 'Suite A3',
-        sub: 'Restaurant · 640 SF',
-        angle: 260, dist: 0.5, height: 0.25, lookY: 0.08,
-        offsetX: -0.25, offsetZ: -0.2,
+        id: 'a3', label: 'Suite A3', sub: 'Restaurant · 640 SF',
+        angle: 280, dist: 0.55, height: 0.2, lookY: 0.08,
+        offsetX: -0.3, offsetZ: -0.25,
         suite: { type: 'Restaurant · 640 SF', title: 'Suite A3', status: 'available', images: [] }
       },
       {
-        id: 'b-block',
-        label: 'B-Block Retail',
-        sub: 'B1–B4 · 160 SF Each',
-        angle: 30, dist: 0.5, height: 0.25, lookY: 0.08,
-        offsetX: 0.2, offsetZ: 0.15,
-        suite: { type: 'Retail · 4 × 160 SF', title: 'Suites B1–B4', status: 'available', images: [] }
+        id: 'b-block', label: 'B-Block Retail', sub: 'B1–B4 · 160 SF Each',
+        angle: 45, dist: 0.55, height: 0.2, lookY: 0.08,
+        offsetX: 0.25, offsetZ: 0.2,
+        suite: { type: 'Retail · 4 x 160 SF', title: 'Suites B1–B4', status: 'available', images: [] }
       },
       {
-        id: 'r440',
-        label: 'Suite R440',
-        sub: 'Retail · 440 SF',
-        angle: 330, dist: 0.5, height: 0.25, lookY: 0.08,
-        offsetX: 0.2, offsetZ: -0.2,
+        id: 'r440', label: 'Suite R440', sub: 'Retail · 440 SF',
+        angle: 320, dist: 0.55, height: 0.2, lookY: 0.08,
+        offsetX: 0.25, offsetZ: -0.25,
         suite: { type: 'Retail · 440 SF', title: 'Suite R440', status: 'available', images: [] }
       },
       {
-        id: 'r192',
-        label: 'Suite R192',
-        sub: 'Retail · 192 SF',
-        angle: 300, dist: 0.5, height: 0.25, lookY: 0.08,
-        offsetX: 0.25, offsetZ: -0.3,
+        id: 'r192', label: 'Suite R192', sub: 'Retail · 192 SF',
+        angle: 160, dist: 0.55, height: 0.2, lookY: 0.08,
+        offsetX: 0.15, offsetZ: -0.35,
         suite: { type: 'Retail · 192 SF', title: 'Suite R192', status: 'available', images: [] }
       },
       {
-        id: 'final',
-        label: 'Jefferson House',
-        sub: 'Peoria Arts District',
+        id: 'final', label: 'Jefferson House', sub: 'Peoria Arts District',
         angle: 45, dist: 1.6, height: 0.7, lookY: 0.15,
-        offsetX: 0, offsetZ: 0,
-        suite: null,
-        showCta: true
+        offsetX: 0, offsetZ: 0, suite: null, showCta: true
       }
     ];
 
-    // Computed after model load — filled by computeTourStops()
     let TOUR_STOPS = [];
 
     function computeTourStops(modelSize) {
@@ -502,20 +568,19 @@
       TOUR_STOPS = TOUR_STOPS_RAW.map(raw => {
         const rad = (raw.angle * Math.PI) / 180;
         const r = maxDim * raw.dist;
+        const lookAt = {
+          x: modelSize.x * (raw.offsetX || 0),
+          y: modelSize.y * raw.lookY,
+          z: modelSize.z * (raw.offsetZ || 0)
+        };
         return {
-          id: raw.id,
-          label: raw.label,
-          sub: raw.sub,
+          id: raw.id, label: raw.label, sub: raw.sub,
           camera: {
-            x: Math.cos(rad) * r,
+            x: lookAt.x + Math.cos(rad) * r,
             y: modelSize.y * raw.height,
-            z: Math.sin(rad) * r
+            z: lookAt.z + Math.sin(rad) * r
           },
-          lookAt: {
-            x: modelSize.x * (raw.offsetX || 0),
-            y: modelSize.y * raw.lookY,
-            z: modelSize.z * (raw.offsetZ || 0)
-          },
+          lookAt,
           suite: raw.suite,
           showCta: raw.showCta
         };
@@ -527,7 +592,7 @@
     let autoAdvanceTimer = null;
     const AUTO_ADVANCE_MS = 8000;
 
-    // Build dot indicators (called after model load computes stops)
+    // ── Dot indicators ──
     const dotsContainer = document.getElementById('tour-dots');
     function buildDots() {
       dotsContainer.innerHTML = '';
@@ -540,38 +605,9 @@
       });
     }
 
-    // Camera animation
-    function animateCamera(targetPos, targetLookAt, duration = 1500) {
-      TWEEN.removeAll();
-      controls.enabled = false;
-
-      const startPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
-      const startTarget = { x: controls.target.x, y: controls.target.y, z: controls.target.z };
-
-      new TWEEN.Tween(startPos)
-        .to(targetPos, duration)
-        .easing(TWEEN.Easing.Cubic.InOut)
-        .onUpdate(() => {
-          camera.position.set(startPos.x, startPos.y, startPos.z);
-        })
-        .start();
-
-      new TWEEN.Tween(startTarget)
-        .to(targetLookAt, duration)
-        .easing(TWEEN.Easing.Cubic.InOut)
-        .onUpdate(() => {
-          controls.target.set(startTarget.x, startTarget.y, startTarget.z);
-        })
-        .onComplete(() => {
-          if (!isTourMode) {
-            controls.enabled = true;
-          }
-        })
-        .start();
-    }
-
-    // Navigate to stop
+    // ── Navigate to stop ──
     function goToStop(index) {
+      if (TOUR_STOPS.length === 0) return;
       if (index < 0 || index >= TOUR_STOPS.length) return;
       currentStop = index;
       const stop = TOUR_STOPS[index];
@@ -599,21 +635,19 @@
       goToStop((currentStop - 1 + TOUR_STOPS.length) % TOUR_STOPS.length);
     }
 
-    // Dot indicators
     function updateDots() {
       dotsContainer.querySelectorAll('.tour-dot').forEach((dot, i) => {
         dot.classList.toggle('active', i === currentStop);
       });
     }
 
-    // Stop label
     function updateStopLabel(stop) {
       stopLabel.innerHTML = stop.label +
         (stop.sub ? '<span class="stop-sub">' + stop.sub + '</span>' : '');
       stopLabel.classList.add('visible');
     }
 
-    // Info Panel
+    // ── Info Panel ──
     const panelType = document.getElementById('panel-type');
     const panelTitle = document.getElementById('panel-title');
     const panelStatus = document.getElementById('panel-status');
@@ -623,26 +657,21 @@
     function showInfoPanel(suite, showCtaButton) {
       panelType.textContent = suite.type;
       panelTitle.textContent = suite.title;
-
       panelStatus.textContent = suite.status === 'available' ? 'Available'
         : suite.status === 'negotiation' ? 'Under Negotiation' : 'Leased';
       panelStatus.className = 'panel-status ' + suite.status;
       panelStatus.style.display = '';
-
       panelGallery.innerHTML = '';
       if (suite.images && suite.images.length > 0) {
         suite.images.forEach(src => {
           const img = document.createElement('img');
-          img.src = src;
-          img.alt = suite.title;
+          img.src = src; img.alt = suite.title;
           panelGallery.appendChild(img);
         });
       }
-
       panelCta.textContent = 'Inquire About This Space';
       panelCta.href = '/apply';
       panelCta.style.display = showCtaButton === false ? 'none' : '';
-
       infoPanel.classList.add('open');
     }
 
@@ -661,7 +690,7 @@
       infoPanel.classList.remove('open');
     }
 
-    // Auto-advance
+    // ── Auto-advance ──
     function resetAutoAdvance() {
       clearTimeout(autoAdvanceTimer);
       if (isTourMode) {
@@ -669,7 +698,28 @@
       }
     }
 
-    // Mode toggle
+    // ── Controls Guide ──
+    const TOUR_GUIDE = `
+      <div class="guide-row"><span class="guide-key">&larr; &rarr;</span><span class="guide-action">Previous / Next</span></div>
+      <div class="guide-row"><span class="guide-key">Space</span><span class="guide-action">Next stop</span></div>
+      <div class="guide-row"><span class="guide-key">Esc</span><span class="guide-action">Close panel</span></div>
+    `;
+    const EXPLORE_GUIDE = `
+      <div class="guide-row"><span class="guide-key">Click + Drag</span><span class="guide-action">Orbit</span></div>
+      <div class="guide-row"><span class="guide-key">Right-Click + Drag</span><span class="guide-action">Pan</span></div>
+      <div class="guide-row"><span class="guide-key">Scroll</span><span class="guide-action">Zoom</span></div>
+      <div class="guide-row"><span class="guide-key">Esc</span><span class="guide-action">Close panel</span></div>
+    `;
+
+    function showGuide(mode) {
+      guideTitle.textContent = mode === 'tour' ? 'Tour Controls' : 'Explore Controls';
+      guideContent.innerHTML = mode === 'tour' ? TOUR_GUIDE : EXPLORE_GUIDE;
+      controlsGuide.classList.add('visible');
+      clearTimeout(showGuide._timer);
+      showGuide._timer = setTimeout(() => controlsGuide.classList.remove('visible'), 6000);
+    }
+
+    // ── Mode toggle ──
     const modeBtns = document.querySelectorAll('.mode-btn');
     modeBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -684,6 +734,7 @@
           stopLabel.style.display = '';
           hotspotLayer.classList.remove('active');
           goToStop(currentStop);
+          showGuide('tour');
         } else {
           isTourMode = false;
           controls.enabled = true;
@@ -691,63 +742,31 @@
           tourControls.style.display = 'none';
           stopLabel.classList.remove('visible');
           hideInfoPanel();
-          hotspotLayer.classList.add('active');
-          updateHotspots();
+          hotspotLayer.classList.remove('active');
+          showGuide('explore');
         }
       });
     });
 
-    // Hotspots (Explore Mode)
-    function updateHotspots() {
-      hotspotLayer.innerHTML = '';
-      TOUR_STOPS.forEach((stop) => {
-        if (!stop.suite) return;
-        const hotspot = document.createElement('div');
-        hotspot.className = 'hotspot';
-        hotspot.innerHTML = '<div class="hotspot-ring"></div><div class="hotspot-dot"></div>';
-        hotspot.style.pointerEvents = 'auto';
-        hotspot.addEventListener('click', () => {
-          animateCamera(stop.camera, stop.lookAt);
-          showInfoPanel(stop.suite, true);
-        });
-        hotspotLayer.appendChild(hotspot);
-        stop._hotspotEl = hotspot;
-      });
-    }
-
-    function projectHotspots() {
-      if (!hotspotLayer.classList.contains('active')) return;
-      TOUR_STOPS.forEach(stop => {
-        if (!stop.suite || !stop._hotspotEl) return;
-        const pos = new THREE.Vector3(stop.lookAt.x, stop.lookAt.y + 2, stop.lookAt.z);
-        pos.project(camera);
-        const x = (pos.x * 0.5 + 0.5) * window.innerWidth;
-        const y = (-pos.y * 0.5 + 0.5) * window.innerHeight;
-        const visible = pos.z < 1;
-        stop._hotspotEl.style.left = x + 'px';
-        stop._hotspotEl.style.top = y + 'px';
-        stop._hotspotEl.style.display = visible ? '' : 'none';
-      });
-    }
-
-    // Init tour
+    // ── Init ──
     function initTour() {
       goToStop(0);
+      showGuide('tour');
     }
 
-    // Nav button events
+    // ── Nav button events ──
     document.getElementById('prev-stop').addEventListener('click', prevStop);
     document.getElementById('next-stop').addEventListener('click', nextStop);
     document.getElementById('panel-close').addEventListener('click', hideInfoPanel);
 
-    // Keyboard nav
+    // ── Keyboard nav ──
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextStop(); }
       if (e.key === 'ArrowLeft') { e.preventDefault(); prevStop(); }
       if (e.key === 'Escape') hideInfoPanel();
     });
 
-    // Touch swipe (Tour Mode)
+    // ── Touch swipe ──
     let touchStartX = 0;
     renderer.domElement.addEventListener('touchstart', (e) => {
       touchStartX = e.touches[0].clientX;
@@ -760,7 +779,9 @@
       }
     }, { passive: true });
 
-    // Load Model
+    // ══════════════════════════════════════════════
+    // ── Load Model ──
+    // ══════════════════════════════════════════════
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/');
 
@@ -773,7 +794,6 @@
         const model = gltf.scene;
         scene.add(model);
 
-        // Center and scale model
         const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
@@ -782,41 +802,33 @@
         model.position.sub(center);
         controls.target.set(0, 0, 0);
 
-        // Position camera to see the whole model
         const dist = maxDim * 1.5;
         camera.position.set(dist, dist * 0.6, dist);
         camera.lookAt(0, 0, 0);
         controls.update();
 
-        // Compute tour stop positions from actual model dimensions
         computeTourStops(size);
         buildDots();
 
-        // Log model info for manual tuning
-        console.log('Model loaded. Bounding box:', {
+        console.log('Model loaded:', {
           size: { x: size.x.toFixed(1), y: size.y.toFixed(1), z: size.z.toFixed(1) },
-          center: { x: center.x.toFixed(1), y: center.y.toFixed(1), z: center.z.toFixed(1) },
           maxDim: maxDim.toFixed(1)
         });
-        console.log('Tour stops computed:', TOUR_STOPS.map(s => ({
-          id: s.id,
-          cam: `${s.camera.x.toFixed(0)}, ${s.camera.y.toFixed(0)}, ${s.camera.z.toFixed(0)}`,
-          look: `${s.lookAt.x.toFixed(0)}, ${s.lookAt.y.toFixed(0)}, ${s.lookAt.z.toFixed(0)}`
-        })));
+        console.log('Tour stops:', TOUR_STOPS.map(s => s.id + ': cam(' +
+          s.camera.x.toFixed(0) + ',' + s.camera.y.toFixed(0) + ',' + s.camera.z.toFixed(0) +
+          ') look(' + s.lookAt.x.toFixed(0) + ',' + s.lookAt.y.toFixed(0) + ',' + s.lookAt.z.toFixed(0) + ')'
+        ));
 
-        // Hide loading, show UI
         loadingEl.classList.add('done');
         setTimeout(() => { loadingEl.style.display = 'none'; }, 800);
         tourNav.classList.add('visible');
         tourControls.classList.add('visible');
 
-        // Enable tour mode by default
         initTour();
       },
       (progress) => {
         if (progress.total > 0) {
-          const pct = (progress.loaded / progress.total) * 100;
-          loadingBar.style.width = pct + '%';
+          loadingBar.style.width = ((progress.loaded / progress.total) * 100) + '%';
         }
       },
       (error) => {
@@ -826,14 +838,14 @@
       }
     );
 
-    // Resize
+    // ── Resize ──
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // Expose for console tuning
+    // ── Expose for console tuning ──
     window.camera = camera;
     window.controls = controls;
     window.getView = () => JSON.stringify({
@@ -841,11 +853,10 @@
       lookAt: { x: +controls.target.x.toFixed(1), y: +controls.target.y.toFixed(1), z: +controls.target.z.toFixed(1) }
     }, null, 2);
 
-    // Render Loop
+    // ── Render Loop ──
     renderer.setAnimationLoop(() => {
       controls.update();
-      TWEEN.update();
-      projectHotspots();
+      updateCameraAnim();
       renderer.render(scene, camera);
     });
   </script>
