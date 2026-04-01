@@ -1,0 +1,1128 @@
+# Jefferson House Virtual Tour — Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Build an interactive 3D virtual tour of Jefferson House from a GLB model, with guided tour stops, free-roam explore mode, and branded info panels.
+
+**Architecture:** Single HTML file (`tour.html`) with Three.js via CDN. Black canvas viewport, navy UI chrome overlays, copper/sage accents. Draco-compressed GLB loaded with progress indicator. Two navigation modes: guided tour with preset camera stops, and free-roam orbit controls with clickable hotspots.
+
+**Tech Stack:** Three.js r170+ (CDN), GLTFLoader, DRACOLoader, Tween.js, vanilla HTML/CSS/JS. No build step.
+
+**Spec:** `docs/superpowers/specs/2026-04-01-virtual-tour-design.md`
+
+---
+
+## File Map
+
+| File | Action | Responsibility |
+|------|--------|----------------|
+| `tour.html` | Create | Entire virtual tour: 3D viewport, UI chrome, info panels, all JS |
+| `jefferson-house-tour.glb` | Create | Draco-compressed version of source GLB |
+| `img/tour/` | Create dir | Suite gallery photos (placeholder empty dir for now) |
+
+---
+
+### Task 1: Draco-Compress the GLB Model
+
+**Files:**
+- Create: `jefferson-house-tour.glb`
+
+- [ ] **Step 1: Install gltf-pipeline**
+
+```bash
+npm install -g gltf-pipeline
+```
+
+- [ ] **Step 2: Compress the source GLB with Draco encoding**
+
+```bash
+cd ~/jefferson-house-site
+gltf-pipeline -i '/Users/stephenallen/Desktop/CAD - August Pre - Constr s - Jefferson House - 2025 Aug.glb' -o jefferson-house-tour.glb -d
+```
+
+The `-d` flag enables Draco compression. This should reduce the 81MB file to roughly 8-15MB.
+
+- [ ] **Step 3: Verify the output**
+
+```bash
+ls -lh jefferson-house-tour.glb
+```
+
+Expected: file exists, size significantly smaller than 81MB.
+
+- [ ] **Step 4: Create the tour images directory**
+
+```bash
+mkdir -p img/tour
+```
+
+- [ ] **Step 5: Commit**
+
+```bash
+cd ~/jefferson-house-site
+git add jefferson-house-tour.glb img/tour/.gitkeep
+git commit -m "Add Draco-compressed GLB model and tour images directory"
+```
+
+Note: if the compressed GLB is still large (>20MB), consider adding it to `.gitignore` and managing it separately. For now, commit it.
+
+---
+
+### Task 2: Scaffold tour.html with Loading Screen
+
+**Files:**
+- Create: `tour.html`
+
+- [ ] **Step 1: Create tour.html with the full document structure, CSS, and loading screen**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Virtual Tour — Jefferson House</title>
+  <meta name="description" content="Explore Jefferson House in 3D — restaurant and retail spaces in Peoria's Arts District.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='8' y='8' width='16' height='16' rx='2' fill='%23b87333' transform='rotate(45 16 16)'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #000;
+      --navy: #1c273f;
+      --navy-light: #253555;
+      --sand: #e0d6ca;
+      --cream: #f5f0ea;
+      --copper: #b87333;
+      --sage: #6b7f5e;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--sand);
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: rgba(184,115,51,0.3); color: var(--cream); }
+
+    /* ── Loading Screen ── */
+    #loading {
+      position: fixed; inset: 0; z-index: 1000;
+      background: var(--navy);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity 0.8s ease;
+    }
+    #loading.done { opacity: 0; pointer-events: none; }
+    #loading img {
+      height: 80px; margin-bottom: 32px;
+      filter: invert(1); opacity: 0.9;
+    }
+    #loading-text {
+      font-size: 13px; color: var(--sand);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 24px; opacity: 0.7;
+    }
+    #loading-bar-track {
+      width: 200px; height: 2px;
+      background: rgba(224,214,202,0.15);
+      border-radius: 1px; overflow: hidden;
+    }
+    #loading-bar {
+      width: 0%; height: 100%;
+      background: var(--copper);
+      border-radius: 1px;
+      transition: width 0.2s ease;
+    }
+
+    /* ── Canvas ── */
+    #canvas-container {
+      position: fixed; inset: 0; z-index: 1;
+    }
+    #canvas-container canvas {
+      display: block; width: 100%; height: 100%;
+    }
+
+    /* ── WebGL Fallback ── */
+    #no-webgl {
+      display: none; position: fixed; inset: 0; z-index: 2000;
+      background: var(--navy);
+      flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 32px;
+    }
+    #no-webgl h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px; color: var(--cream); margin-bottom: 12px;
+    }
+    #no-webgl p { color: var(--sand); opacity: 0.7; max-width: 400px; }
+
+    /* ── Top Nav Bar ── */
+    #tour-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      background: rgba(28,39,63,0.92);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(184,115,51,0.15);
+      padding: 12px clamp(16px, 3vw, 32px);
+      display: flex; align-items: center; justify-content: space-between;
+      opacity: 0; transition: opacity 0.5s ease;
+    }
+    #tour-nav.visible { opacity: 1; }
+    .nav-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px; font-weight: 700;
+      color: var(--sand); letter-spacing: 0.5px;
+    }
+    .mode-toggle {
+      display: flex; gap: 4px;
+      background: rgba(0,0,0,0.3); border-radius: 4px; padding: 3px;
+    }
+    .mode-btn {
+      padding: 6px 16px; border: none; border-radius: 3px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--sand); opacity: 0.5;
+      background: transparent; cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .mode-btn.active {
+      background: var(--copper); color: var(--cream);
+      opacity: 1;
+    }
+
+    /* ── Tour Controls (prev/next + dots) ── */
+    #tour-controls {
+      position: fixed; bottom: 32px; left: 50%; z-index: 50;
+      transform: translateX(-50%);
+      display: flex; align-items: center; gap: 20px;
+      opacity: 0; transition: opacity 0.5s ease;
+    }
+    #tour-controls.visible { opacity: 1; }
+    .tour-arrow {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid rgba(184,115,51,0.4);
+      background: rgba(28,39,63,0.8);
+      backdrop-filter: blur(8px);
+      color: var(--copper); font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.3s ease;
+    }
+    .tour-arrow:hover {
+      background: var(--copper); color: var(--cream);
+      border-color: var(--copper);
+    }
+    .tour-dots { display: flex; gap: 8px; }
+    .tour-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--copper); opacity: 0.3;
+      cursor: pointer; transition: all 0.3s ease;
+      border: none;
+    }
+    .tour-dot.active { opacity: 1; transform: scale(1.3); }
+    .tour-dot:hover { opacity: 0.7; }
+
+    /* ── Stop Label ── */
+    #stop-label {
+      position: fixed; bottom: 80px; left: 50%; z-index: 50;
+      transform: translateX(-50%);
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; color: var(--cream);
+      text-align: center; white-space: nowrap;
+      opacity: 0; transition: opacity 0.4s ease;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    }
+    #stop-label.visible { opacity: 1; }
+    #stop-label .stop-sub {
+      display: block; font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--copper);
+      letter-spacing: 1.5px; margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    /* ── Info Panel ── */
+    #info-panel {
+      position: fixed; top: 60px; right: 0; bottom: 0;
+      width: 340px; z-index: 40;
+      background: rgba(28,39,63,0.95);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-left: 1px solid rgba(184,115,51,0.15);
+      padding: 28px 24px;
+      transform: translateX(100%);
+      transition: transform 0.4s var(--ease);
+      overflow-y: auto;
+    }
+    #info-panel.open { transform: translateX(0); }
+    .panel-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid rgba(184,115,51,0.3);
+      background: transparent; color: var(--sand);
+      font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s ease;
+    }
+    .panel-close:hover { background: var(--copper); color: var(--cream); }
+    .panel-type {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; color: var(--copper);
+      letter-spacing: 1.5px; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .panel-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; color: var(--cream);
+      margin-bottom: 16px;
+    }
+    .panel-status {
+      display: inline-block;
+      padding: 4px 12px; border-radius: 3px;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .panel-status.available { background: var(--sage); color: var(--cream); }
+    .panel-status.negotiation { background: var(--copper); color: var(--cream); }
+    .panel-status.leased { background: rgba(224,214,202,0.15); color: var(--sand); }
+    .panel-gallery {
+      display: flex; gap: 8px; overflow-x: auto;
+      padding-bottom: 8px; margin-top: 16px;
+    }
+    .panel-gallery img {
+      width: 120px; height: 80px; object-fit: cover;
+      border-radius: 4px; border: 1px solid rgba(184,115,51,0.15);
+      flex-shrink: 0; cursor: pointer;
+      transition: border-color 0.3s;
+    }
+    .panel-gallery img:hover { border-color: var(--copper); }
+    .panel-cta {
+      display: block; width: 100%; margin-top: 24px;
+      padding: 12px 24px; border: 1px solid rgba(184,115,51,0.4);
+      background: transparent; color: var(--copper);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      text-align: center; border-radius: 3px;
+      cursor: pointer; transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    .panel-cta:hover {
+      background: var(--copper); color: var(--cream);
+      border-color: var(--copper);
+    }
+
+    /* ── Hotspot Markers (Explore Mode) ── */
+    .hotspot {
+      position: absolute; width: 24px; height: 24px;
+      transform: translate(-50%, -50%);
+      cursor: pointer; pointer-events: auto; z-index: 30;
+    }
+    .hotspot-ring {
+      width: 100%; height: 100%;
+      border: 2px solid var(--copper);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .hotspot-dot {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px; height: 8px;
+      background: var(--copper); border-radius: 50%;
+    }
+    #hotspot-layer {
+      position: fixed; inset: 0; z-index: 30;
+      pointer-events: none;
+      display: none;
+    }
+    #hotspot-layer.active { display: block; }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      #info-panel {
+        top: auto; right: 0; bottom: 0; left: 0;
+        width: 100%; height: auto; max-height: 60vh;
+        transform: translateY(100%);
+        border-left: none;
+        border-top: 1px solid rgba(184,115,51,0.15);
+        border-radius: 16px 16px 0 0;
+        padding: 20px 20px 32px;
+      }
+      #info-panel.open { transform: translateY(0); }
+      #info-panel::before {
+        content: ''; display: block;
+        width: 36px; height: 4px;
+        background: rgba(224,214,202,0.2);
+        border-radius: 2px; margin: 0 auto 16px;
+      }
+      #tour-controls { bottom: 20px; }
+      #stop-label { bottom: 68px; font-size: 17px; }
+      .tour-arrow { width: 36px; height: 36px; font-size: 16px; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loading">
+    <img src="img/logo-script.png" alt="Jefferson House">
+    <div id="loading-text">Loading Virtual Tour...</div>
+    <div id="loading-bar-track"><div id="loading-bar"></div></div>
+  </div>
+
+  <!-- WebGL Fallback -->
+  <div id="no-webgl">
+    <h2>3D Tour Unavailable</h2>
+    <p>Your browser doesn't support WebGL, which is needed for the 3D tour. Try Chrome, Firefox, Safari, or Edge.</p>
+  </div>
+
+  <!-- 3D Canvas -->
+  <div id="canvas-container"></div>
+
+  <!-- Top Nav -->
+  <nav id="tour-nav">
+    <span class="nav-brand">Jefferson House</span>
+    <div class="mode-toggle">
+      <button class="mode-btn active" data-mode="tour">Tour</button>
+      <button class="mode-btn" data-mode="explore">Explore</button>
+    </div>
+  </nav>
+
+  <!-- Stop Label -->
+  <div id="stop-label"></div>
+
+  <!-- Tour Controls -->
+  <div id="tour-controls">
+    <button class="tour-arrow" id="prev-stop">&#8249;</button>
+    <div class="tour-dots" id="tour-dots"></div>
+    <button class="tour-arrow" id="next-stop">&#8250;</button>
+  </div>
+
+  <!-- Hotspot Layer (Explore Mode) -->
+  <div id="hotspot-layer"></div>
+
+  <!-- Info Panel -->
+  <div id="info-panel">
+    <button class="panel-close" id="panel-close">&times;</button>
+    <div class="panel-type" id="panel-type"></div>
+    <div class="panel-title" id="panel-title"></div>
+    <div class="panel-status" id="panel-status"></div>
+    <div class="panel-gallery" id="panel-gallery"></div>
+    <a href="/apply" class="panel-cta" id="panel-cta">Inquire About This Space</a>
+  </div>
+
+  <!-- Scripts -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module">
+    // ── next task adds the JS here ──
+  </script>
+</body>
+</html>
+```
+
+- [ ] **Step 2: Open in browser and verify loading screen displays**
+
+```bash
+open ~/jefferson-house-site/tour.html
+```
+
+Expected: Navy screen with JH logo (inverted), "Loading Virtual Tour..." text, copper progress bar track. The loading screen stays visible because no model is loaded yet.
+
+- [ ] **Step 3: Verify WebGL fallback by checking the detection code path exists**
+
+The fallback div is hidden by default (`display: none`). The JS (added in Task 3) will show it if WebGL is unavailable.
+
+- [ ] **Step 4: Commit**
+
+```bash
+cd ~/jefferson-house-site
+git add tour.html
+git commit -m "Scaffold tour.html with loading screen and UI chrome"
+```
+
+---
+
+### Task 3: Three.js Scene Setup and Model Loading
+
+**Files:**
+- Modify: `tour.html` (replace the `<script type="module">` contents)
+
+- [ ] **Step 1: Add the Three.js scene initialization and model loading code**
+
+Replace the `// ── next task adds the JS here ──` comment inside the `<script type="module">` tag with:
+
+```javascript
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── WebGL Check ──
+const canvas = document.createElement('canvas');
+const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+if (!gl) {
+  document.getElementById('no-webgl').style.display = 'flex';
+  document.getElementById('loading').style.display = 'none';
+  throw new Error('WebGL not supported');
+}
+
+// ── DOM refs ──
+const container = document.getElementById('canvas-container');
+const loadingEl = document.getElementById('loading');
+const loadingBar = document.getElementById('loading-bar');
+const tourNav = document.getElementById('tour-nav');
+const tourControls = document.getElementById('tour-controls');
+const stopLabel = document.getElementById('stop-label');
+const infoPanel = document.getElementById('info-panel');
+const hotspotLayer = document.getElementById('hotspot-layer');
+
+// ── Scene ──
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.set(50, 30, 50);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+container.appendChild(renderer.domElement);
+
+// ── Lighting ──
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+scene.add(ambientLight);
+
+const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+dirLight.position.set(50, 80, 50);
+dirLight.castShadow = false;
+scene.add(dirLight);
+
+const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+fillLight.position.set(-30, 20, -30);
+scene.add(fillLight);
+
+// ── Controls (starts disabled, enabled after load) ──
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 5;
+controls.maxDistance = 200;
+controls.maxPolarAngle = Math.PI / 2.05;
+controls.enabled = false;
+
+// ── Load Model ──
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/');
+
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+
+gltfLoader.load(
+  'jefferson-house-tour.glb',
+  (gltf) => {
+    const model = gltf.scene;
+    scene.add(model);
+
+    // Center and scale model
+    const box = new THREE.Box3().setFromObject(model);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+
+    model.position.sub(center);
+    controls.target.set(0, 0, 0);
+
+    // Position camera to see the whole model
+    const dist = maxDim * 1.5;
+    camera.position.set(dist, dist * 0.6, dist);
+    camera.lookAt(0, 0, 0);
+    controls.update();
+
+    // Log model info for setting up tour stops
+    console.log('Model loaded. Bounding box:', {
+      size: { x: size.x.toFixed(1), y: size.y.toFixed(1), z: size.z.toFixed(1) },
+      center: { x: center.x.toFixed(1), y: center.y.toFixed(1), z: center.z.toFixed(1) },
+      maxDim: maxDim.toFixed(1)
+    });
+
+    // Hide loading, show UI
+    loadingEl.classList.add('done');
+    setTimeout(() => { loadingEl.style.display = 'none'; }, 800);
+    tourNav.classList.add('visible');
+    tourControls.classList.add('visible');
+
+    // Enable tour mode by default
+    initTour();
+  },
+  (progress) => {
+    if (progress.total > 0) {
+      const pct = (progress.loaded / progress.total) * 100;
+      loadingBar.style.width = pct + '%';
+    }
+  },
+  (error) => {
+    console.error('Error loading model:', error);
+    document.getElementById('loading-text').textContent = 'Error loading model';
+    loadingBar.style.background = '#c44';
+  }
+);
+
+// ── Resize ──
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ── Render Loop ──
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  updateTweens();
+  renderer.render(scene, camera);
+}
+animate();
+
+// ══════════════════════════════════════════════
+// ── Tour System (Task 4 fills these in) ──
+// ══════════════════════════════════════════════
+
+function initTour() {
+  // placeholder — Task 4 implements this
+  console.log('Tour system ready — implement in Task 4');
+}
+
+function updateTweens() {
+  // placeholder — Task 4 implements this
+}
+```
+
+- [ ] **Step 2: Open tour.html in browser and verify model loads**
+
+```bash
+cd ~/jefferson-house-site && python3 -m http.server 8080 &
+open http://localhost:8080/tour.html
+```
+
+Note: must serve via HTTP (not file://) because ES module imports require it.
+
+Expected: Loading screen with progress bar filling, then the 3D model appears on a black background. Check the browser console for the model bounding box info (needed for Task 4 camera positions).
+
+- [ ] **Step 3: Record the console output**
+
+Open browser DevTools (Cmd+Option+I), check the Console tab. Copy the bounding box dimensions logged by the loader. These values will be used to set up tour stop camera positions in Task 4.
+
+- [ ] **Step 4: Commit**
+
+```bash
+cd ~/jefferson-house-site
+git add tour.html
+git commit -m "Add Three.js scene setup and GLB model loading"
+```
+
+---
+
+### Task 4: Tour Stop System with Camera Animations
+
+**Files:**
+- Modify: `tour.html` (replace the placeholder `initTour()` and `updateTweens()` functions, and add tour stop data + navigation logic)
+
+- [ ] **Step 1: Add the Tween.js import**
+
+Add this line at the top of the `<script type="module">` block, after the Three.js imports:
+
+```javascript
+import TWEEN from 'https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@25/dist/tween.esm.js';
+```
+
+- [ ] **Step 2: Replace updateTweens placeholder**
+
+Replace the `function updateTweens()` placeholder with:
+
+```javascript
+function updateTweens() {
+  TWEEN.update();
+}
+```
+
+- [ ] **Step 3: Add the tour stops data and full tour system**
+
+Replace the `function initTour()` placeholder with the complete tour system. Add this code block right before the `function initTour()` line:
+
+```javascript
+// ── Tour Stop Data ──
+// Camera positions are initial estimates. Tune x/y/z and lookAt after
+// seeing the actual model orientation. Use the console-logged bounding
+// box from Task 3 as reference.
+const TOUR_STOPS = [
+  {
+    id: 'exterior',
+    label: 'Exterior View',
+    sub: 'Full Building',
+    camera: { x: 60, y: 35, z: 60 },
+    lookAt: { x: 0, y: 5, z: 0 },
+    suite: null
+  },
+  {
+    id: 'courtyard',
+    label: 'Entrance & Courtyard',
+    sub: 'Shared Areas',
+    camera: { x: 20, y: 12, z: 25 },
+    lookAt: { x: 0, y: 3, z: 0 },
+    suite: null
+  },
+  {
+    id: 'a1',
+    label: 'Suite A1',
+    sub: 'Restaurant · 640 SF',
+    camera: { x: -10, y: 8, z: 15 },
+    lookAt: { x: -15, y: 3, z: 10 },
+    suite: {
+      type: 'Restaurant · 640 SF',
+      title: 'Suite A1',
+      status: 'available',
+      images: []
+    }
+  },
+  {
+    id: 'a2',
+    label: 'Suite A2',
+    sub: 'Restaurant · 640 SF',
+    camera: { x: -10, y: 8, z: 0 },
+    lookAt: { x: -15, y: 3, z: -5 },
+    suite: {
+      type: 'Restaurant · 640 SF',
+      title: 'Suite A2',
+      status: 'available',
+      images: []
+    }
+  },
+  {
+    id: 'a3',
+    label: 'Suite A3',
+    sub: 'Restaurant · 640 SF',
+    camera: { x: -10, y: 8, z: -15 },
+    lookAt: { x: -15, y: 3, z: -20 },
+    suite: {
+      type: 'Restaurant · 640 SF',
+      title: 'Suite A3',
+      status: 'available',
+      images: []
+    }
+  },
+  {
+    id: 'b-block',
+    label: 'B-Block Retail',
+    sub: 'B1–B4 · 160 SF Each',
+    camera: { x: 15, y: 8, z: 10 },
+    lookAt: { x: 10, y: 3, z: 5 },
+    suite: {
+      type: 'Retail · 4 × 160 SF',
+      title: 'Suites B1–B4',
+      status: 'available',
+      images: []
+    }
+  },
+  {
+    id: 'r440',
+    label: 'Suite R440',
+    sub: 'Retail · 440 SF',
+    camera: { x: 20, y: 8, z: -10 },
+    lookAt: { x: 15, y: 3, z: -15 },
+    suite: {
+      type: 'Retail · 440 SF',
+      title: 'Suite R440',
+      status: 'available',
+      images: []
+    }
+  },
+  {
+    id: 'r192',
+    label: 'Suite R192',
+    sub: 'Retail · 192 SF',
+    camera: { x: 25, y: 8, z: -20 },
+    lookAt: { x: 20, y: 3, z: -25 },
+    suite: {
+      type: 'Retail · 192 SF',
+      title: 'Suite R192',
+      status: 'available',
+      images: []
+    }
+  },
+  {
+    id: 'final',
+    label: 'Jefferson House',
+    sub: 'Peoria Arts District',
+    camera: { x: 70, y: 40, z: 70 },
+    lookAt: { x: 0, y: 5, z: 0 },
+    suite: null,
+    showCta: true
+  }
+];
+
+let currentStop = 0;
+let isTourMode = true;
+let autoAdvanceTimer = null;
+const AUTO_ADVANCE_MS = 8000;
+
+// ── Build dot indicators ──
+const dotsContainer = document.getElementById('tour-dots');
+TOUR_STOPS.forEach((stop, i) => {
+  const dot = document.createElement('button');
+  dot.className = 'tour-dot' + (i === 0 ? ' active' : '');
+  dot.title = stop.label;
+  dot.addEventListener('click', () => goToStop(i));
+  dotsContainer.appendChild(dot);
+});
+
+// ── Camera animation ──
+function animateCamera(targetPos, targetLookAt, duration = 1500) {
+  TWEEN.removeAll();
+  controls.enabled = false;
+
+  const startPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+  const startTarget = { x: controls.target.x, y: controls.target.y, z: controls.target.z };
+
+  new TWEEN.Tween(startPos)
+    .to(targetPos, duration)
+    .easing(TWEEN.Easing.Cubic.InOut)
+    .onUpdate(() => {
+      camera.position.set(startPos.x, startPos.y, startPos.z);
+    })
+    .start();
+
+  new TWEEN.Tween(startTarget)
+    .to(targetLookAt, duration)
+    .easing(TWEEN.Easing.Cubic.InOut)
+    .onUpdate(() => {
+      controls.target.set(startTarget.x, startTarget.y, startTarget.z);
+    })
+    .onComplete(() => {
+      if (!isTourMode) {
+        controls.enabled = true;
+      }
+    })
+    .start();
+}
+
+// ── Navigate to stop ──
+function goToStop(index) {
+  if (index < 0 || index >= TOUR_STOPS.length) return;
+  currentStop = index;
+  const stop = TOUR_STOPS[index];
+
+  animateCamera(stop.camera, stop.lookAt);
+  updateDots();
+  updateStopLabel(stop);
+
+  if (stop.suite) {
+    showInfoPanel(stop.suite, stop.showCta);
+  } else if (stop.showCta) {
+    showFinalCta();
+  } else {
+    hideInfoPanel();
+  }
+
+  resetAutoAdvance();
+}
+
+function nextStop() {
+  goToStop((currentStop + 1) % TOUR_STOPS.length);
+}
+
+function prevStop() {
+  goToStop((currentStop - 1 + TOUR_STOPS.length) % TOUR_STOPS.length);
+}
+
+// ── Dot indicators ──
+function updateDots() {
+  dotsContainer.querySelectorAll('.tour-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentStop);
+  });
+}
+
+// ── Stop label ──
+function updateStopLabel(stop) {
+  stopLabel.innerHTML = stop.label +
+    (stop.sub ? '<span class="stop-sub">' + stop.sub + '</span>' : '');
+  stopLabel.classList.add('visible');
+}
+
+// ── Info Panel ──
+const panelType = document.getElementById('panel-type');
+const panelTitle = document.getElementById('panel-title');
+const panelStatus = document.getElementById('panel-status');
+const panelGallery = document.getElementById('panel-gallery');
+const panelCta = document.getElementById('panel-cta');
+
+function showInfoPanel(suite, showCtaButton) {
+  panelType.textContent = suite.type;
+  panelTitle.textContent = suite.title;
+
+  panelStatus.textContent = suite.status === 'available' ? 'Available'
+    : suite.status === 'negotiation' ? 'Under Negotiation' : 'Leased';
+  panelStatus.className = 'panel-status ' + suite.status;
+
+  panelGallery.innerHTML = '';
+  if (suite.images && suite.images.length > 0) {
+    suite.images.forEach(src => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = suite.title;
+      panelGallery.appendChild(img);
+    });
+  }
+
+  panelCta.textContent = 'Inquire About This Space';
+  panelCta.href = '/apply';
+  panelCta.style.display = showCtaButton === false ? 'none' : '';
+
+  infoPanel.classList.add('open');
+}
+
+function showFinalCta() {
+  panelType.textContent = 'Peoria Arts District';
+  panelTitle.textContent = 'Ready to Join Jefferson House?';
+  panelStatus.style.display = 'none';
+  panelGallery.innerHTML = '';
+  panelCta.textContent = 'Apply Now';
+  panelCta.href = '/apply';
+  panelCta.style.display = '';
+  infoPanel.classList.add('open');
+}
+
+function hideInfoPanel() {
+  infoPanel.classList.remove('open');
+}
+
+// ── Auto-advance ──
+function resetAutoAdvance() {
+  clearTimeout(autoAdvanceTimer);
+  if (isTourMode) {
+    autoAdvanceTimer = setTimeout(nextStop, AUTO_ADVANCE_MS);
+  }
+}
+
+// ── Mode toggle ──
+const modeBtns = document.querySelectorAll('.mode-btn');
+modeBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const mode = btn.dataset.mode;
+    modeBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    if (mode === 'tour') {
+      isTourMode = true;
+      controls.enabled = false;
+      tourControls.style.display = 'flex';
+      stopLabel.style.display = '';
+      hotspotLayer.classList.remove('active');
+      goToStop(currentStop);
+    } else {
+      isTourMode = false;
+      controls.enabled = true;
+      clearTimeout(autoAdvanceTimer);
+      tourControls.style.display = 'none';
+      stopLabel.classList.remove('visible');
+      hideInfoPanel();
+      hotspotLayer.classList.add('active');
+      updateHotspots();
+    }
+  });
+});
+
+// ── Hotspots (Explore Mode) ──
+function updateHotspots() {
+  hotspotLayer.innerHTML = '';
+  TOUR_STOPS.forEach((stop, i) => {
+    if (!stop.suite) return;
+    const hotspot = document.createElement('div');
+    hotspot.className = 'hotspot';
+    hotspot.innerHTML = '<div class="hotspot-ring"></div><div class="hotspot-dot"></div>';
+    hotspot.style.pointerEvents = 'auto';
+    hotspot.addEventListener('click', () => {
+      animateCamera(stop.camera, stop.lookAt);
+      showInfoPanel(stop.suite, true);
+    });
+    hotspotLayer.appendChild(hotspot);
+    // Position hotspots via 3D-to-2D projection
+    stop._hotspotEl = hotspot;
+  });
+}
+
+function projectHotspots() {
+  if (!hotspotLayer.classList.contains('active')) return;
+  TOUR_STOPS.forEach(stop => {
+    if (!stop.suite || !stop._hotspotEl) return;
+    const pos = new THREE.Vector3(stop.lookAt.x, stop.lookAt.y + 2, stop.lookAt.z);
+    pos.project(camera);
+    const x = (pos.x * 0.5 + 0.5) * window.innerWidth;
+    const y = (-pos.y * 0.5 + 0.5) * window.innerHeight;
+    const visible = pos.z < 1;
+    stop._hotspotEl.style.left = x + 'px';
+    stop._hotspotEl.style.top = y + 'px';
+    stop._hotspotEl.style.display = visible ? '' : 'none';
+  });
+}
+
+// Add hotspot projection to render loop — modify animate()
+const _origAnimate = animate;
+// We need to inject hotspot projection into the render loop.
+// Since animate is already running, we use a post-render hook pattern:
+renderer.setAnimationLoop(() => {
+  controls.update();
+  TWEEN.update();
+  projectHotspots();
+  renderer.render(scene, camera);
+});
+// Cancel the requestAnimationFrame loop since setAnimationLoop replaces it
+
+// ── Nav button events ──
+document.getElementById('prev-stop').addEventListener('click', prevStop);
+document.getElementById('next-stop').addEventListener('click', nextStop);
+document.getElementById('panel-close').addEventListener('click', hideInfoPanel);
+
+// ── Keyboard nav ──
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextStop(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prevStop(); }
+  if (e.key === 'Escape') hideInfoPanel();
+});
+
+// ── Touch swipe (Tour Mode) ──
+let touchStartX = 0;
+renderer.domElement.addEventListener('touchstart', (e) => {
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
+renderer.domElement.addEventListener('touchend', (e) => {
+  if (!isTourMode) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) {
+    dx > 0 ? prevStop() : nextStop();
+  }
+}, { passive: true });
+```
+
+- [ ] **Step 4: Replace the initTour function**
+
+Replace the old `function initTour()` placeholder with:
+
+```javascript
+function initTour() {
+  goToStop(0);
+}
+```
+
+- [ ] **Step 5: Remove the old animate() function and updateTweens()**
+
+Since we now use `renderer.setAnimationLoop()`, remove the old `function animate()` block and the `animate()` call, as well as the `function updateTweens()` block. The render loop is now handled by `setAnimationLoop` added in Step 3.
+
+- [ ] **Step 6: Test the tour in browser**
+
+```bash
+cd ~/jefferson-house-site && python3 -m http.server 8080 &
+open http://localhost:8080/tour.html
+```
+
+Expected:
+- Model loads with progress bar
+- Nav bar appears with Tour/Explore toggle
+- Dot indicators and prev/next arrows at bottom
+- Click next arrow: camera smoothly animates to next stop
+- Stop label shows (e.g., "Suite A1 / Restaurant · 640 SF")
+- Info panel slides in for suite stops
+- Click Explore: orbit controls activate, hotspot markers appear
+- Click a hotspot: camera flies there, info panel opens
+- Keyboard arrows and spacebar navigate stops
+- Swipe on mobile (or touch simulation) navigates
+
+- [ ] **Step 7: Tune camera positions**
+
+After seeing how the model is oriented, adjust the `camera` and `lookAt` coordinates in `TOUR_STOPS`. The initial values are estimates. Use the browser console to check `camera.position` and `controls.target` after manually orbiting to a good vantage point, then copy those values back into the data.
+
+Tip: add this to the console while exploring:
+```javascript
+// Run in browser console to get current camera state
+JSON.stringify({ camera: { x: +camera.position.x.toFixed(1), y: +camera.position.y.toFixed(1), z: +camera.position.z.toFixed(1) }, lookAt: { x: +controls.target.x.toFixed(1), y: +controls.target.y.toFixed(1), z: +controls.target.z.toFixed(1) } })
+```
+
+- [ ] **Step 8: Commit**
+
+```bash
+cd ~/jefferson-house-site
+git add tour.html
+git commit -m "Add tour stop system with camera animations and dual navigation modes"
+```
+
+---
+
+### Task 5: Final Polish and Testing
+
+**Files:**
+- Modify: `tour.html` (minor tweaks after testing)
+
+- [ ] **Step 1: Test on mobile viewport**
+
+Open Chrome DevTools, toggle device toolbar (Cmd+Shift+M), test on iPhone 14 Pro and iPad viewports:
+- Verify info panel renders as bottom sheet
+- Verify swipe navigation works
+- Verify touch orbit in Explore mode
+- Verify text is readable at mobile sizes
+
+- [ ] **Step 2: Test iframe embedding**
+
+Create a quick test by adding this to the browser console on the main site:
+
+```javascript
+const iframe = document.createElement('iframe');
+iframe.src = 'tour.html';
+iframe.style.cssText = 'width:100%;height:600px;border:none;border-radius:8px';
+document.body.prepend(iframe);
+```
+
+Verify the tour loads and functions inside the iframe.
+
+- [ ] **Step 3: Test keyboard navigation**
+
+- Right arrow / spacebar: next stop
+- Left arrow: previous stop
+- Escape: close info panel
+
+- [ ] **Step 4: Add .superpowers to .gitignore if not present**
+
+```bash
+cd ~/jefferson-house-site
+echo '.superpowers/' >> .gitignore 2>/dev/null
+```
+
+- [ ] **Step 5: Final commit**
+
+```bash
+cd ~/jefferson-house-site
+git add -A
+git commit -m "Complete Jefferson House virtual tour — Three.js GLB viewer with guided stops"
+```
+
+- [ ] **Step 6: Push**
+
+```bash
+cd ~/jefferson-house-site
+git push
+```
