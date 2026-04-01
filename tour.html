@@ -409,6 +409,20 @@
   }
   </script>
   <script type="module">
+    // ┌──────────────────────────────────────────────┐
+    // │  SUITE AVAILABILITY — Update statuses here   │
+    // │                                              │
+    // │  Options: 'available', 'negotiation', 'leased'│
+    // └──────────────────────────────────────────────┘
+    const SUITE_STATUS = {
+      a1:      'available',
+      a2:      'available',
+      a3:      'available',
+      'b-block': 'available',
+      r440:    'available',
+      r192:    'available',
+    };
+
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -531,37 +545,37 @@
         id: 'a1', label: 'Suite A1', sub: 'Restaurant · 640 SF',
         camera: { x: 35.7, y: 2.4, z: 67.5 },
         lookAt: { x: 56.6, y: -3.5, z: 32.8 },
-        suite: { type: 'Restaurant · 640 SF', title: 'Suite A1', status: 'available', images: [] }
+        suite: { type: 'Restaurant · 640 SF', title: 'Suite A1', status: SUITE_STATUS.a1, images: [] }
       },
       {
         id: 'a2', label: 'Suite A2', sub: 'Restaurant · 640 SF',
         camera: { x: 28.7, y: 6.1, z: 72.7 },
         lookAt: { x: 28.7, y: 5.7, z: 70.9 },
-        suite: { type: 'Restaurant · 640 SF', title: 'Suite A2', status: 'available', images: [] }
+        suite: { type: 'Restaurant · 640 SF', title: 'Suite A2', status: SUITE_STATUS.a2, images: [] }
       },
       {
         id: 'a3', label: 'Suite A3', sub: 'Restaurant · 640 SF',
         camera: { x: 15.6, y: 5.9, z: 72.6 },
         lookAt: { x: 15.6, y: 5.6, z: 70.8 },
-        suite: { type: 'Restaurant · 640 SF', title: 'Suite A3', status: 'available', images: [] }
+        suite: { type: 'Restaurant · 640 SF', title: 'Suite A3', status: SUITE_STATUS.a3, images: [] }
       },
       {
         id: 'b-block', label: 'B-Block Retail', sub: 'B1–B4 · 160 SF Each',
         camera: { x: 64.1, y: 1.8, z: 42.2 },
         lookAt: { x: 59.1, y: -0.3, z: 39.5 },
-        suite: { type: 'Retail · 4 x 160 SF', title: 'Suites B1–B4', status: 'available', images: [] }
+        suite: { type: 'Retail · 4 x 160 SF', title: 'Suites B1–B4', status: SUITE_STATUS['b-block'], images: [] }
       },
       {
         id: 'r440', label: 'Suite R440', sub: 'Retail · 440 SF',
         camera: { x: 59.9, y: 2.3, z: 26.3 },
         lookAt: { x: 35.1, y: -9.7, z: 17 },
-        suite: { type: 'Retail · 440 SF', title: 'Suite R440', status: 'available', images: [] }
+        suite: { type: 'Retail · 440 SF', title: 'Suite R440', status: SUITE_STATUS.r440, images: [] }
       },
       {
         id: 'r192', label: 'Suite R192', sub: 'Retail · 192 SF',
         camera: { x: 42.5, y: 0, z: 32.8 },
         lookAt: { x: 40.5, y: -2.9, z: 42.2 },
-        suite: { type: 'Retail · 192 SF', title: 'Suite R192', status: 'available', images: [], note: 'Located at the corner of Restaurant A2. Not shown in this rendering.' }
+        suite: { type: 'Retail · 192 SF', title: 'Suite R192', status: SUITE_STATUS.r192, images: [], note: 'Located at the corner of Restaurant A2. Not shown in this rendering.' }
       },
       {
         id: 'courtyard', label: 'Courtyard', sub: 'Peoria Arts District',
