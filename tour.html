@@ -412,128 +412,133 @@
     controls.maxPolarAngle = Math.PI / 2.05;
     controls.enabled = false;
 
-    // Tour Stop Data
-    // Camera positions are initial estimates. Tune after seeing model orientation.
-    const TOUR_STOPS = [
+    // Tour Stop Data — positions use unit fractions, scaled to model after load.
+    // angle: orbit angle in degrees around Y axis
+    // dist: distance from center as fraction of maxDim (1.0 = full view)
+    // height: camera Y as fraction of model height
+    // lookY: lookAt Y as fraction of model height
+    // offsetX/offsetZ: shift lookAt target as fraction of model width/depth
+    const TOUR_STOPS_RAW = [
       {
         id: 'exterior',
         label: 'Exterior View',
         sub: 'Full Building',
-        camera: { x: 60, y: 35, z: 60 },
-        lookAt: { x: 0, y: 5, z: 0 },
+        angle: 135, dist: 1.5, height: 0.6, lookY: 0.15,
+        offsetX: 0, offsetZ: 0,
         suite: null
       },
       {
         id: 'courtyard',
         label: 'Entrance & Courtyard',
         sub: 'Shared Areas',
-        camera: { x: 20, y: 12, z: 25 },
-        lookAt: { x: 0, y: 3, z: 0 },
+        angle: 90, dist: 0.8, height: 0.35, lookY: 0.1,
+        offsetX: 0, offsetZ: 0,
         suite: null
       },
       {
         id: 'a1',
         label: 'Suite A1',
         sub: 'Restaurant · 640 SF',
-        camera: { x: -10, y: 8, z: 15 },
-        lookAt: { x: -15, y: 3, z: 10 },
-        suite: {
-          type: 'Restaurant · 640 SF',
-          title: 'Suite A1',
-          status: 'available',
-          images: []
-        }
+        angle: 200, dist: 0.5, height: 0.25, lookY: 0.08,
+        offsetX: -0.25, offsetZ: 0.2,
+        suite: { type: 'Restaurant · 640 SF', title: 'Suite A1', status: 'available', images: [] }
       },
       {
         id: 'a2',
         label: 'Suite A2',
         sub: 'Restaurant · 640 SF',
-        camera: { x: -10, y: 8, z: 0 },
-        lookAt: { x: -15, y: 3, z: -5 },
-        suite: {
-          type: 'Restaurant · 640 SF',
-          title: 'Suite A2',
-          status: 'available',
-          images: []
-        }
+        angle: 230, dist: 0.5, height: 0.25, lookY: 0.08,
+        offsetX: -0.25, offsetZ: 0,
+        suite: { type: 'Restaurant · 640 SF', title: 'Suite A2', status: 'available', images: [] }
       },
       {
         id: 'a3',
         label: 'Suite A3',
         sub: 'Restaurant · 640 SF',
-        camera: { x: -10, y: 8, z: -15 },
-        lookAt: { x: -15, y: 3, z: -20 },
-        suite: {
-          type: 'Restaurant · 640 SF',
-          title: 'Suite A3',
-          status: 'available',
-          images: []
-        }
+        angle: 260, dist: 0.5, height: 0.25, lookY: 0.08,
+        offsetX: -0.25, offsetZ: -0.2,
+        suite: { type: 'Restaurant · 640 SF', title: 'Suite A3', status: 'available', images: [] }
       },
       {
         id: 'b-block',
         label: 'B-Block Retail',
         sub: 'B1–B4 · 160 SF Each',
-        camera: { x: 15, y: 8, z: 10 },
-        lookAt: { x: 10, y: 3, z: 5 },
-        suite: {
-          type: 'Retail · 4 × 160 SF',
-          title: 'Suites B1–B4',
-          status: 'available',
-          images: []
-        }
+        angle: 30, dist: 0.5, height: 0.25, lookY: 0.08,
+        offsetX: 0.2, offsetZ: 0.15,
+        suite: { type: 'Retail · 4 × 160 SF', title: 'Suites B1–B4', status: 'available', images: [] }
       },
       {
         id: 'r440',
         label: 'Suite R440',
         sub: 'Retail · 440 SF',
-        camera: { x: 20, y: 8, z: -10 },
-        lookAt: { x: 15, y: 3, z: -15 },
-        suite: {
-          type: 'Retail · 440 SF',
-          title: 'Suite R440',
-          status: 'available',
-          images: []
-        }
+        angle: 330, dist: 0.5, height: 0.25, lookY: 0.08,
+        offsetX: 0.2, offsetZ: -0.2,
+        suite: { type: 'Retail · 440 SF', title: 'Suite R440', status: 'available', images: [] }
       },
       {
         id: 'r192',
         label: 'Suite R192',
         sub: 'Retail · 192 SF',
-        camera: { x: 25, y: 8, z: -20 },
-        lookAt: { x: 20, y: 3, z: -25 },
-        suite: {
-          type: 'Retail · 192 SF',
-          title: 'Suite R192',
-          status: 'available',
-          images: []
-        }
+        angle: 300, dist: 0.5, height: 0.25, lookY: 0.08,
+        offsetX: 0.25, offsetZ: -0.3,
+        suite: { type: 'Retail · 192 SF', title: 'Suite R192', status: 'available', images: [] }
       },
       {
         id: 'final',
         label: 'Jefferson House',
         sub: 'Peoria Arts District',
-        camera: { x: 70, y: 40, z: 70 },
-        lookAt: { x: 0, y: 5, z: 0 },
+        angle: 45, dist: 1.6, height: 0.7, lookY: 0.15,
+        offsetX: 0, offsetZ: 0,
         suite: null,
         showCta: true
       }
     ];
+
+    // Computed after model load — filled by computeTourStops()
+    let TOUR_STOPS = [];
+
+    function computeTourStops(modelSize) {
+      const maxDim = Math.max(modelSize.x, modelSize.y, modelSize.z);
+      TOUR_STOPS = TOUR_STOPS_RAW.map(raw => {
+        const rad = (raw.angle * Math.PI) / 180;
+        const r = maxDim * raw.dist;
+        return {
+          id: raw.id,
+          label: raw.label,
+          sub: raw.sub,
+          camera: {
+            x: Math.cos(rad) * r,
+            y: modelSize.y * raw.height,
+            z: Math.sin(rad) * r
+          },
+          lookAt: {
+            x: modelSize.x * (raw.offsetX || 0),
+            y: modelSize.y * raw.lookY,
+            z: modelSize.z * (raw.offsetZ || 0)
+          },
+          suite: raw.suite,
+          showCta: raw.showCta
+        };
+      });
+    }
 
     let currentStop = 0;
     let isTourMode = true;
     let autoAdvanceTimer = null;
     const AUTO_ADVANCE_MS = 8000;
 
-    // Build dot indicators
+    // Build dot indicators (called after model load computes stops)
     const dotsContainer = document.getElementById('tour-dots');
-    TOUR_STOPS.forEach((stop, i) => {
-      const dot = document.createElement('button');
-      dot.className = 'tour-dot' + (i === 0 ? ' active' : '');
-      dot.title = stop.label;
-      dot.addEventListener('click', () => goToStop(i));
-      dotsContainer.appendChild(dot);
-    });
+    function buildDots() {
+      dotsContainer.innerHTML = '';
+      TOUR_STOPS.forEach((stop, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'tour-dot' + (i === 0 ? ' active' : '');
+        dot.title = stop.label;
+        dot.addEventListener('click', () => goToStop(i));
+        dotsContainer.appendChild(dot);
+      });
+    }
 
     // Camera animation
     function animateCamera(targetPos, targetLookAt, duration = 1500) {
@@ -783,12 +788,21 @@
         camera.lookAt(0, 0, 0);
         controls.update();
 
-        // Log model info for tuning tour stops
+        // Compute tour stop positions from actual model dimensions
+        computeTourStops(size);
+        buildDots();
+
+        // Log model info for manual tuning
         console.log('Model loaded. Bounding box:', {
           size: { x: size.x.toFixed(1), y: size.y.toFixed(1), z: size.z.toFixed(1) },
           center: { x: center.x.toFixed(1), y: center.y.toFixed(1), z: center.z.toFixed(1) },
           maxDim: maxDim.toFixed(1)
         });
+        console.log('Tour stops computed:', TOUR_STOPS.map(s => ({
+          id: s.id,
+          cam: `${s.camera.x.toFixed(0)}, ${s.camera.y.toFixed(0)}, ${s.camera.z.toFixed(0)}`,
+          look: `${s.lookAt.x.toFixed(0)}, ${s.lookAt.y.toFixed(0)}, ${s.lookAt.z.toFixed(0)}`
+        })));
 
         // Hide loading, show UI
         loadingEl.classList.add('done');
@@ -818,6 +832,14 @@
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
+
+    // Expose for console tuning
+    window.camera = camera;
+    window.controls = controls;
+    window.getView = () => JSON.stringify({
+      camera: { x: +camera.position.x.toFixed(1), y: +camera.position.y.toFixed(1), z: +camera.position.z.toFixed(1) },
+      lookAt: { x: +controls.target.x.toFixed(1), y: +controls.target.y.toFixed(1), z: +controls.target.z.toFixed(1) }
+    }, null, 2);
 
     // Render Loop
     renderer.setAnimationLoop(() => {
