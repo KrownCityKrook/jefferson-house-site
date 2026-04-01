@@ -19,6 +19,9 @@
   <meta name="twitter:description" content="A restored courtyard venue in Peoria, AZ — food, retail, and community at 8308 W. Jefferson Street." />
   <meta name="twitter:image" content="https://jeffersonhouseaz.com/img/og-image.jpg" />
 
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='8' y='8' width='16' height='16' rx='2' fill='%23b87333' transform='rotate(45 16 16)'/%3E%3C/svg%3E">
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -74,6 +77,50 @@ a { text-decoration: none; color: inherit; }
 img { max-width: 100%; }
 
 /* ================================================
+   SCROLL REVEAL SYSTEM
+   ================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.reveal-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ================================================
    STICKY NAV
    ================================================ */
 .nav {
@@ -82,6 +129,7 @@ img { max-width: 100%; }
   display: flex; justify-content: space-between; align-items: center;
   background: rgba(28,39,63,0.92);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(184,115,51,0.12);
   transition: all 0.4s ease;
 }
@@ -95,8 +143,17 @@ img { max-width: 100%; }
   font-size: 11px; color: var(--jh-sand-dark);
   text-transform: uppercase; letter-spacing: 2.5px; font-weight: 400;
   transition: color 0.3s;
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 0; right: 0;
+  height: 1px; background: var(--jh-copper);
+  transform: scaleX(0); transform-origin: right;
+  transition: transform 0.3s ease;
 }
 .nav-link:hover { color: var(--jh-copper); }
+.nav-link:hover::after { transform: scaleX(1); transform-origin: left; }
 .nav-cta {
   font-size: 11px; color: var(--jh-copper); font-weight: 600;
   text-transform: uppercase; letter-spacing: 2px;
@@ -125,44 +182,50 @@ img { max-width: 100%; }
       rgba(28,39,63,0.85) 100%
     ),
     url('img/hero-evening.jpg') center/cover no-repeat;
+  will-change: transform;
 }
-/* hero-bg::before removed — real photo doesn't need simulated lines */
-/* hero-bg::after removed — real image in use */
-/* Grain */
 .grain {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* Hero stagger entrance */
 .hero-content {
   position: relative; z-index: 3;
-  animation: fadeUp 1.2s ease;
 }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
+.hero-content > * {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: heroFadeUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+.hero-content > *:nth-child(1) { animation-delay: 0.3s; }
+.hero-content > *:nth-child(2) { animation-delay: 0.6s; }
+.hero-content > *:nth-child(3) { animation-delay: 0.9s; }
+.hero-content > *:nth-child(4) { animation-delay: 1.0s; }
+.hero-content > *:nth-child(5) { animation-delay: 1.2s; }
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Thin ornamental line */
 .ornament {
   width: 48px; height: 1px; margin: 0 auto 36px;
   background: linear-gradient(90deg, transparent, var(--jh-copper), transparent);
   position: relative;
 }
 .ornament::before {
-  content: '◆'; position: absolute; top: 50%; left: 50%;
+  content: '\25C6'; position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   font-size: 6px; color: var(--jh-copper);
 }
 
-.hero-wordmark {
-  font-family: 'Playfair Display', serif;
-  font-size: 80px; font-weight: 700;
-  color: var(--jh-sand);
-  letter-spacing: 3px; line-height: 0.95;
-  margin-bottom: 20px;
-  text-shadow: 0 4px 32px rgba(0,0,0,0.3);
+.hero-logo {
+  height: 120px;
+  width: auto;
+  filter: invert(1);
+  opacity: 0.95;
+  margin-bottom: 24px;
 }
 .hero-tagline {
   font-family: 'DM Sans', sans-serif;
@@ -195,11 +258,12 @@ img { max-width: 100%; }
 .hero-cta:hover { color: var(--jh-cream); border-color: var(--jh-copper); }
 .hero-cta:hover::before { transform: scaleX(1); }
 
-/* Scroll indicator */
 .scroll-hint {
   position: absolute; bottom: 40px; left: 50%;
   transform: translateX(-50%); z-index: 3;
   display: flex; flex-direction: column; align-items: center; gap: 8px;
+  opacity: 0;
+  animation: heroFadeUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.6s forwards;
 }
 .scroll-hint span {
   font-size: 8px; color: var(--jh-sand-dark); opacity: 0.35;
@@ -296,7 +360,7 @@ img { max-width: 100%; }
 .gallery-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  grid-template-rows: 240px 240px;
+  grid-template-rows: 280px 280px;
   gap: 4px;
 }
 .gallery-item {
@@ -305,9 +369,15 @@ img { max-width: 100%; }
   font-size: 12px; color: rgba(255,255,255,0.3);
   font-family: 'DM Sans', sans-serif;
   letter-spacing: 1px;
-  transition: transform 0.4s;
+  cursor: pointer;
 }
-.gallery-item:hover { transform: scale(1.01); }
+.gallery-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.gallery-item:hover img { transform: scale(1.06); }
 .gallery-item:nth-child(1) {
   grid-row: 1 / 3;
   background: linear-gradient(135deg, #4a5e42, #3d5038);
@@ -326,10 +396,101 @@ img { max-width: 100%; }
 }
 .gallery-caption {
   position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 16px 20px;
-  background: linear-gradient(transparent, rgba(17,27,46,0.8));
+  padding: 24px 20px 16px;
+  background: linear-gradient(transparent, rgba(17,27,46,0.85));
   font-size: 10px; color: var(--jh-sand-dark);
   text-transform: uppercase; letter-spacing: 1.5px;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.gallery-item:hover .gallery-caption {
+  transform: translateY(0);
+}
+
+/* ================================================
+   LIGHTBOX
+   ================================================ */
+.lightbox {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(17,27,46,0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.lightbox.active {
+  opacity: 1; pointer-events: auto;
+}
+.lightbox-img-wrap {
+  position: relative;
+  max-width: 90vw; max-height: 80vh;
+}
+.lightbox-img-wrap img {
+  max-width: 90vw; max-height: 80vh;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+}
+.lightbox.active .lightbox-img-wrap img {
+  opacity: 1; transform: scale(1);
+}
+.lightbox-caption {
+  margin-top: 16px;
+  font-size: 11px; color: var(--jh-sand-dark);
+  text-transform: uppercase; letter-spacing: 2px;
+  opacity: 0;
+  transition: opacity 0.4s ease 0.2s;
+}
+.lightbox.active .lightbox-caption { opacity: 1; }
+.lightbox-close {
+  position: absolute; top: 24px; right: 32px;
+  width: 40px; height: 40px;
+  background: none; border: 1px solid rgba(184,115,51,0.3);
+  border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s;
+  z-index: 10;
+}
+.lightbox-close:hover {
+  border-color: var(--jh-copper);
+  background: rgba(184,115,51,0.1);
+}
+.lightbox-close svg {
+  width: 16px; height: 16px;
+  stroke: var(--jh-sand-dark);
+  transition: stroke 0.3s;
+}
+.lightbox-close:hover svg { stroke: var(--jh-copper); }
+.lightbox-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px;
+  background: none; border: 1px solid rgba(184,115,51,0.25);
+  border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s;
+}
+.lightbox-nav:hover {
+  border-color: var(--jh-copper);
+  background: rgba(184,115,51,0.1);
+}
+.lightbox-nav svg {
+  width: 18px; height: 18px;
+  stroke: var(--jh-sand-dark);
+  transition: stroke 0.3s;
+}
+.lightbox-nav:hover svg { stroke: var(--jh-copper); }
+.lightbox-prev { left: 24px; }
+.lightbox-next { right: 24px; }
+.lightbox-counter {
+  position: absolute; bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px; color: var(--jh-slate);
+  letter-spacing: 2px;
 }
 
 /* ================================================
@@ -367,18 +528,28 @@ img { max-width: 100%; }
   border: 1px solid rgba(28,39,63,0.06);
   border-radius: 12px;
   overflow: hidden;
-  transition: all 0.3s;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   box-shadow: 0 2px 12px rgba(28,39,63,0.04);
 }
 .space-card:hover {
-  box-shadow: 0 8px 32px rgba(28,39,63,0.08);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(28,39,63,0.1);
+  transform: translateY(-4px);
 }
 .space-photo {
-  height: 160px;
+  height: 180px;
+  overflow: hidden;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; color: rgba(0,0,0,0.15);
   letter-spacing: 1px;
+}
+.space-photo img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+}
+.space-card:hover .space-photo img {
+  transform: scale(1.04);
 }
 .space-card:nth-child(1) .space-photo { background: linear-gradient(135deg, #d4c4b0, #c8b8a4); }
 .space-card:nth-child(2) .space-photo { background: linear-gradient(135deg, #c8d4c0, #b8c4b0); }
@@ -428,6 +599,13 @@ img { max-width: 100%; }
   letter-spacing: 3px; text-transform: uppercase;
   border-radius: 2px; transition: all 0.3s;
   border: 1px solid var(--jh-navy);
+  position: relative; overflow: hidden;
+}
+.btn-primary::before {
+  content: ''; position: absolute; inset: 0;
+  background: transparent;
+  border: 1px solid var(--jh-navy);
+  transition: all 0.3s;
 }
 .btn-primary:hover {
   background: transparent; color: var(--jh-navy);
@@ -446,6 +624,16 @@ img { max-width: 100%; }
   font-size: 12px; color: rgba(255,255,255,0.2);
   letter-spacing: 1px;
   position: relative;
+  overflow: hidden;
+}
+.about-image img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 8s ease;
+}
+.about-image:hover img {
+  transform: scale(1.05);
 }
 .about-image::after {
   content: '';
@@ -499,14 +687,31 @@ img { max-width: 100%; }
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 32px; max-width: 960px; margin: 0 auto;
 }
-.feature-item { text-align: center; }
+.feature-item {
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+.feature-item:hover { transform: translateY(-4px); }
 .feature-icon {
-  width: 56px; height: 56px; margin: 0 auto 16px;
+  width: 64px; height: 64px; margin: 0 auto 20px;
   border: 1px solid rgba(28,39,63,0.08);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; color: var(--jh-copper);
   background: var(--jh-ivory);
+  transition: all 0.4s ease;
+}
+.feature-icon svg {
+  width: 26px; height: 26px;
+  stroke: var(--jh-copper);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.3s;
+}
+.feature-item:hover .feature-icon {
+  border-color: rgba(184,115,51,0.25);
+  box-shadow: 0 4px 20px rgba(184,115,51,0.1);
 }
 .feature-name {
   font-family: 'Playfair Display', serif;
@@ -538,15 +743,27 @@ img { max-width: 100%; }
 .location-address {
   font-size: 14px; color: var(--jh-sand-dark);
   line-height: 1.8; margin-bottom: 24px;
+  font-style: normal;
 }
 .location-note {
   font-size: 12px; color: var(--jh-copper);
   font-style: italic; line-height: 1.6;
 }
 .location-map {
+  position: relative;
   background: linear-gradient(135deg, #d4cec4, #c8c2b8);
   display: flex; align-items: center; justify-content: center;
   font-size: 12px; color: rgba(0,0,0,0.2); letter-spacing: 1px;
+}
+.location-map iframe {
+  border: 0; display: block;
+  width: 100%; height: 100%;
+  min-height: 400px;
+  filter: saturate(0.7) contrast(1.1);
+  transition: filter 0.4s;
+}
+.location-map:hover iframe {
+  filter: saturate(1) contrast(1);
 }
 
 /* ================================================
@@ -580,8 +797,18 @@ img { max-width: 100%; }
   background: var(--jh-copper);
   color: var(--jh-cream); font-size: 12px; font-weight: 600;
   letter-spacing: 3px; text-transform: uppercase;
-  border-radius: 2px; transition: all 0.3s;
+  border-radius: 2px; transition: all 0.4s;
   border: 1px solid var(--jh-copper);
+  position: relative; overflow: hidden;
+}
+.cta-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(255,255,255,0.15);
+  transform: translateX(-101%);
+  transition: transform 0.5s ease;
+}
+.cta-btn:hover::before {
+  transform: translateX(101%);
 }
 .cta-btn:hover {
   background: transparent; color: var(--jh-copper);
@@ -607,8 +834,17 @@ img { max-width: 100%; }
   font-size: 11px; color: var(--jh-sand-dark);
   text-transform: uppercase; letter-spacing: 1.5px;
   transition: color 0.3s;
+  position: relative;
+}
+.footer-link::after {
+  content: '';
+  position: absolute; bottom: -2px; left: 0; right: 0;
+  height: 1px; background: var(--jh-copper);
+  transform: scaleX(0); transform-origin: right;
+  transition: transform 0.3s ease;
 }
 .footer-link:hover { color: var(--jh-copper); }
+.footer-link:hover::after { transform: scaleX(1); transform-origin: left; }
 .footer-legal {
   text-align: center; padding: 16px 48px;
   background: var(--jh-navy-dark);
@@ -617,45 +853,17 @@ img { max-width: 100%; }
 }
 
 /* ================================================
-   GALLERY AND SPACE PHOTO IMAGE RULES
-   ================================================ */
-.gallery-item img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.space-photo img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* ================================================
-   HERO LOGO
-   ================================================ */
-.hero-logo {
-  height: 120px;
-  width: auto;
-  filter: invert(1);
-  opacity: 0.95;
-  margin-bottom: 24px;
-}
-@media (max-width: 600px) {
-  .hero-logo { height: 80px; }
-}
-
-/* ================================================
    TABLET RESPONSIVE (max-width: 900px)
    ================================================ */
 @media (max-width: 900px) {
   .nav { padding: 14px 24px; }
-  .hero-wordmark { font-size: 56px; }
   .hero-tagline { font-size: 12px; letter-spacing: 5px; }
+  .hero-logo { height: 100px; }
   .vision { padding: 72px 24px; }
   .vision-text { font-size: 24px; }
   .gallery-grid {
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 200px 200px 200px;
+    grid-template-rows: 220px 220px 220px;
   }
   .gallery-item:nth-child(1) { grid-row: 1 / 2; grid-column: 1 / -1; }
   .spaces { padding: 72px 24px; }
@@ -670,6 +878,8 @@ img { max-width: 100%; }
   .location-map { min-height: 300px; }
   .footer { padding: 32px 24px; flex-direction: column; gap: 20px; text-align: center; }
   .cta-banner { padding: 72px 24px; }
+  .lightbox-prev { left: 12px; }
+  .lightbox-next { right: 12px; }
 }
 
 /* ================================================
@@ -679,7 +889,7 @@ img { max-width: 100%; }
   .nav { padding: 12px 16px; }
   .nav-links { display: none; }
   .nav-hamburger { display: flex; }
-  .hero-wordmark { font-size: 40px; letter-spacing: 1px; }
+  .hero-logo { height: 80px; }
   .hero-tagline { font-size: 11px; letter-spacing: 4px; }
   .hero-sub { font-size: 10px; margin-bottom: 36px; }
   .hero-cta { padding: 14px 32px; font-size: 10px; letter-spacing: 3px; }
@@ -692,20 +902,25 @@ img { max-width: 100%; }
   .vision-text { font-size: 20px; }
   .gallery-grid {
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(5, 180px);
+    grid-template-rows: repeat(5, 200px);
   }
   .gallery-item:nth-child(1) { grid-row: auto; }
+  .gallery-caption { transform: translateY(0); }
   .spaces { padding: 56px 20px; }
   .section-title { font-size: 28px; }
   .about-text { padding: 40px 20px; }
   .about-title { font-size: 24px; }
   .feature-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .feature-icon { width: 56px; height: 56px; }
+  .feature-icon svg { width: 22px; height: 22px; }
   .location-info { padding: 40px 20px; }
   .location-title { font-size: 22px; }
   .cta-banner { padding: 56px 20px; }
   .cta-title { font-size: 28px; }
   .footer { padding: 24px 16px; }
   .footer-legal { padding: 12px 16px; }
+  .lightbox-nav { display: none; }
+  .lightbox-close { top: 16px; right: 16px; }
 }
 
 /* ================================================
@@ -742,6 +957,7 @@ img { max-width: 100%; }
   width: 280px; height: 100vh;
   background: rgba(28,39,63,0.97);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   z-index: 150;
   padding: 80px 32px 32px;
   flex-direction: column;
@@ -818,7 +1034,7 @@ img { max-width: 100%; }
 
 <!-- HERO -->
 <section class="hero" id="hero">
-  <div class="hero-bg"></div>
+  <div class="hero-bg" id="hero-bg"></div>
   <div class="grain"></div>
   <div class="hero-content">
     <div class="ornament"></div>
@@ -834,43 +1050,43 @@ img { max-width: 100%; }
 </section>
 
 <!-- STATS -->
-<div class="stats-bar" role="region" aria-label="Property statistics">
-  <div class="stat"><div class="stat-num">3</div><div class="stat-label">Restaurants</div></div>
-  <div class="stat"><div class="stat-num">6</div><div class="stat-label">Retail</div></div>
-  <div class="stat"><div class="stat-num">1</div><div class="stat-label">Bar</div></div>
-  <div class="stat"><div class="stat-num">1</div><div class="stat-label">Stage</div></div>
+<div class="stats-bar" id="stats-bar" role="region" aria-label="Property statistics">
+  <div class="stat"><div class="stat-num" data-target="3">0</div><div class="stat-label">Restaurants</div></div>
+  <div class="stat"><div class="stat-num" data-target="6">0</div><div class="stat-label">Retail</div></div>
+  <div class="stat"><div class="stat-num" data-target="1">0</div><div class="stat-label">Bar</div></div>
+  <div class="stat"><div class="stat-num" data-target="1">0</div><div class="stat-label">Stage</div></div>
 </div>
 
 <!-- VISION -->
 <section class="vision">
-  <div class="vision-label">Our Vision</div>
-  <div class="vision-text">
+  <div class="vision-label reveal">Our Vision</div>
+  <div class="vision-text reveal">
     A place full of resilience, creativity, and untapped potential. We are here to <em>reclaim beauty in overlooked places</em>, generate local jobs, and invite the community to gather, dream, and grow.
   </div>
-  <div class="vision-credit">— Jefferson House, Peoria AZ</div>
+  <div class="vision-credit reveal">— Jefferson House, Peoria AZ</div>
 </section>
 
 <!-- GALLERY -->
 <section class="gallery" id="gallery">
-  <div class="gallery-label"><span>Gallery</span></div>
+  <div class="gallery-label reveal"><span>Gallery</span></div>
   <div class="gallery-grid">
-    <div class="gallery-item"><img src="img/gallery-interior-courtyard.jpg" alt="Interior courtyard with trees, communal tables, and pendant lighting" loading="lazy"><div class="gallery-caption">Open-air courtyard</div></div>
-    <div class="gallery-item"><img src="img/gallery-east-front.jpg" alt="East perspective rendering showing front entrance and signage" loading="lazy"><div class="gallery-caption">East perspective</div></div>
-    <div class="gallery-item"><img src="img/gallery-southeast-corner.jpg" alt="Southeast corner with bike racks, trees, and pedestrian activity" loading="lazy"><div class="gallery-caption">Southeast corner</div></div>
-    <div class="gallery-item"><img src="img/floor-plan.jpg" alt="Ground floor layout showing all suites, courtyard, and amenities" loading="lazy"><div class="gallery-caption">Site layout</div></div>
-    <div class="gallery-item"><img src="img/gallery-south-jefferson.jpg" alt="South perspective from Jefferson Street showing full facade" loading="lazy"><div class="gallery-caption">South from Jefferson St</div></div>
+    <div class="gallery-item reveal-scale" data-index="0"><img src="img/gallery-interior-courtyard.jpg" alt="Interior courtyard with trees, communal tables, and pendant lighting" loading="lazy"><div class="gallery-caption">Open-air courtyard</div></div>
+    <div class="gallery-item reveal-scale" data-index="1"><img src="img/gallery-east-front.jpg" alt="East perspective rendering showing front entrance and signage" loading="lazy"><div class="gallery-caption">East perspective</div></div>
+    <div class="gallery-item reveal-scale" data-index="2"><img src="img/gallery-southeast-corner.jpg" alt="Southeast corner with bike racks, trees, and pedestrian activity" loading="lazy"><div class="gallery-caption">Southeast corner</div></div>
+    <div class="gallery-item reveal-scale" data-index="3"><img src="img/floor-plan.jpg" alt="Ground floor layout showing all suites, courtyard, and amenities" loading="lazy"><div class="gallery-caption">Site layout</div></div>
+    <div class="gallery-item reveal-scale" data-index="4"><img src="img/gallery-south-jefferson.jpg" alt="South perspective from Jefferson Street showing full facade" loading="lazy"><div class="gallery-caption">South from Jefferson St</div></div>
   </div>
 </section>
 
 <!-- SPACES -->
 <section class="spaces" id="spaces">
-  <div class="section-header">
+  <div class="section-header reveal">
     <div class="section-label">Available Spaces</div>
     <h2 class="section-title">Find Your Place</h2>
     <div class="section-sub">Affordable commercial space for small food and retail entrepreneurs who believe in fostering community connections.</div>
   </div>
   <div class="space-grid">
-    <div class="space-card">
+    <div class="space-card reveal-left">
       <div class="space-photo"><img src="img/gallery-south-jefferson.jpg" alt="Restaurant suites with outdoor dining along Jefferson Street" loading="lazy"></div>
       <div class="space-info">
         <div class="space-type">Restaurant</div>
@@ -892,7 +1108,7 @@ img { max-width: 100%; }
         </div>
       </div>
     </div>
-    <div class="space-card">
+    <div class="space-card reveal-right">
       <div class="space-photo"><img src="img/gallery-southeast-corner.jpg" alt="Retail storefronts with pedestrian walkways and landscaping" loading="lazy"></div>
       <div class="space-info">
         <div class="space-type">Retail</div>
@@ -915,24 +1131,24 @@ img { max-width: 100%; }
       </div>
     </div>
   </div>
-  <div class="spaces-cta">
+  <div class="spaces-cta reveal">
     <a href="#apply" class="btn-primary">View All Spaces</a>
   </div>
 </section>
 
 <!-- ABOUT -->
 <section class="about" id="about">
-  <div class="about-image" role="img" aria-label="Interior rendering with trees, communal tables, and warm lighting">
-    <img src="img/gallery-interior-courtyard.jpg" alt="Interior courtyard with mature trees, communal picnic tables, and pendant lighting" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+  <div class="about-image reveal-left" role="img" aria-label="Interior rendering with trees, communal tables, and warm lighting">
+    <img src="img/gallery-interior-courtyard.jpg" alt="Interior courtyard with mature trees, communal picnic tables, and pendant lighting" loading="lazy">
   </div>
   <div class="about-text">
-    <div class="about-label">Our Story</div>
-    <h2 class="about-title">Bringing together emerging talent and established creative forerunners</h2>
-    <div class="about-body">
+    <div class="about-label reveal-right">Our Story</div>
+    <h2 class="about-title reveal-right">Bringing together emerging talent and established creative forerunners</h2>
+    <div class="about-body reveal-right">
       <p>Jefferson House is an open-air courtyard venue designed to bring together local restaurants, curated retail, a neighborhood bar, live music, and the people who make the West Valley creative.</p>
       <p>Built on the proven model of The Churchill in downtown Phoenix, we know what it takes to create spaces where small businesses can come together and thrive. This is not a speculative concept. It is a model that already works.</p>
     </div>
-    <div class="about-partners">
+    <div class="about-partners reveal-right">
       <span class="partner-label">In partnership with</span>
       <span class="partner-names">The Churchill · Banquet · City of Peoria</span>
     </div>
@@ -941,28 +1157,52 @@ img { max-width: 100%; }
 
 <!-- FEATURES -->
 <section class="features">
-  <div class="section-header">
+  <div class="section-header reveal">
     <div class="section-label">What We Offer</div>
     <h2 class="section-title">Built for You</h2>
   </div>
   <div class="feature-grid">
-    <div class="feature-item">
-      <div class="feature-icon" aria-hidden="true">◈</div>
+    <div class="feature-item reveal">
+      <div class="feature-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 21V11a8 8 0 0 1 16 0v10"/>
+          <line x1="2" y1="21" x2="22" y2="21"/>
+          <line x1="12" y1="11" x2="12" y2="21"/>
+        </svg>
+      </div>
       <h3 class="feature-name">Courtyard</h3>
       <div class="feature-desc">Open-air gathering space with climate control, landscaping, and water features</div>
     </div>
-    <div class="feature-item">
-      <div class="feature-icon" aria-hidden="true">◈</div>
+    <div class="feature-item reveal">
+      <div class="feature-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M9 18V5l12-2v13"/>
+          <circle cx="6" cy="18" r="3"/>
+          <circle cx="18" cy="16" r="3"/>
+        </svg>
+      </div>
       <h3 class="feature-name">Live Stage</h3>
       <div class="feature-desc">Dedicated performance area for live music, arts programming, and community events</div>
     </div>
-    <div class="feature-item">
-      <div class="feature-icon" aria-hidden="true">◈</div>
+    <div class="feature-item reveal">
+      <div class="feature-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M5 3h14l-3.5 8a4.5 4.5 0 0 1-3.5 2 4.5 4.5 0 0 1-3.5-2L5 3z"/>
+          <line x1="12" y1="13" x2="12" y2="19"/>
+          <line x1="8" y1="19" x2="16" y2="19"/>
+          <line x1="7" y1="3" x2="9" y2="7"/>
+        </svg>
+      </div>
       <h3 class="feature-name">Shared Bar</h3>
       <div class="feature-desc">Full-service bar managed by Jefferson House, driving foot traffic to every tenant</div>
     </div>
-    <div class="feature-item">
-      <div class="feature-icon" aria-hidden="true">◈</div>
+    <div class="feature-item reveal">
+      <div class="feature-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z"/>
+          <polyline points="9 12 11 14 15 10"/>
+        </svg>
+      </div>
       <h3 class="feature-name">Proven Model</h3>
       <div class="feature-desc">Built on 10+ years of operational know-how from The Churchill in downtown Phoenix</div>
     </div>
@@ -972,27 +1212,27 @@ img { max-width: 100%; }
 <!-- LOCATION -->
 <section class="location" id="location">
   <div class="location-info">
-    <div class="section-label">Location</div>
-    <h2 class="location-title">Where Peoria Gathers</h2>
-    <address class="location-address">
+    <div class="section-label reveal-left">Location</div>
+    <h2 class="location-title reveal-left">Where Peoria Gathers</h2>
+    <address class="location-address reveal-left">
       8308 W. Jefferson Street<br>
       Peoria, Arizona 85345<br><br>
       Just off Grand Avenue and the Loop 101, at the center of everything west of the I-17.
     </address>
-    <div class="location-note">
+    <div class="location-note reveal-left">
       Our heart, our work, and our bike rides have always led back here.
     </div>
   </div>
-  <div class="location-map" id="map">
+  <div class="location-map reveal-right" id="map">
     <iframe src="https://www.google.com/maps?q=8308+W+Jefferson+St,+Peoria,+AZ+85345&output=embed" width="100%" height="100%" style="border:0; display:block; min-height:400px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Jefferson House location at 8308 W Jefferson St, Peoria AZ"></iframe>
   </div>
 </section>
 
 <!-- CTA BANNER -->
 <section class="cta-banner" id="apply">
-  <h2 class="cta-title">Join the Community</h2>
-  <div class="cta-sub">We are looking for creators and entrepreneurs who believe in building something together. Restaurants, retail, and creative concepts welcome.</div>
-  <a href="/apply" class="cta-btn">Apply for a Space</a>
+  <h2 class="cta-title reveal">Join the Community</h2>
+  <div class="cta-sub reveal">We are looking for creators and entrepreneurs who believe in building something together. Restaurants, retail, and creative concepts welcome.</div>
+  <a href="/apply" class="cta-btn reveal">Apply for a Space</a>
 </section>
 
 <!-- FOOTER -->
@@ -1004,7 +1244,26 @@ img { max-width: 100%; }
     <a href="https://thechurchillphx.com" class="footer-link" target="_blank" rel="noopener">The Churchill</a>
   </div>
 </footer>
-<div class="footer-legal">© 2026 Jefferson House, LLC · Peoria, Arizona</div>
+<div class="footer-legal">&copy; 2026 Jefferson House, LLC &middot; Peoria, Arizona</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" role="dialog" aria-label="Image viewer" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <button class="lightbox-nav lightbox-prev" aria-label="Previous image">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <button class="lightbox-nav lightbox-next" aria-label="Next image">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+  </button>
+  <div class="lightbox-img-wrap">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+  <div class="lightbox-counter" id="lightbox-counter"></div>
+</div>
+
   <script>
 (function() {
   'use strict';
@@ -1071,6 +1330,182 @@ img { max-width: 100%; }
       }
     });
   });
+
+  // === Scroll Reveal (IntersectionObserver) ===
+  var revealClasses = ['.reveal', '.reveal-left', '.reveal-right', '.reveal-scale'];
+  var revealEls = document.querySelectorAll(revealClasses.join(','));
+
+  if ('IntersectionObserver' in window) {
+    var revealObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          // Stagger siblings that share a parent and are reveals
+          var el = entry.target;
+          var parent = el.parentElement;
+          var siblings = parent.querySelectorAll(revealClasses.join(','));
+          var idx = Array.prototype.indexOf.call(siblings, el);
+          if (idx > 0) {
+            el.style.transitionDelay = (idx * 0.12) + 's';
+          }
+          el.classList.add('visible');
+          revealObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    revealEls.forEach(function(el) {
+      revealObserver.observe(el);
+    });
+  } else {
+    // Fallback: show everything
+    revealEls.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+  // === Stat Counter Animation ===
+  var statsBar = document.getElementById('stats-bar');
+  var statNums = statsBar.querySelectorAll('.stat-num');
+  var statsAnimated = false;
+
+  function animateStats() {
+    if (statsAnimated) return;
+    statsAnimated = true;
+    statNums.forEach(function(el) {
+      var target = parseInt(el.getAttribute('data-target'), 10);
+      var duration = 1200;
+      var start = performance.now();
+      function tick(now) {
+        var elapsed = now - start;
+        var progress = Math.min(elapsed / duration, 1);
+        // Ease out cubic
+        var eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * target);
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          el.textContent = target;
+        }
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  if ('IntersectionObserver' in window) {
+    var statsObserver = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting) {
+        animateStats();
+        statsObserver.disconnect();
+      }
+    }, { threshold: 0.5 });
+    statsObserver.observe(statsBar);
+  } else {
+    animateStats();
+  }
+
+  // === Hero Parallax ===
+  var heroBg = document.getElementById('hero-bg');
+  var ticking = false;
+
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        var scrolled = window.scrollY;
+        if (scrolled < heroHeight) {
+          heroBg.style.transform = 'translateY(' + (scrolled * 0.3) + 'px)';
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // === Gallery Lightbox ===
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightbox-img');
+  var lightboxCaption = document.getElementById('lightbox-caption');
+  var lightboxCounter = document.getElementById('lightbox-counter');
+  var galleryItems = document.querySelectorAll('.gallery-item[data-index]');
+  var currentIndex = 0;
+  var galleryData = [];
+
+  galleryItems.forEach(function(item) {
+    var img = item.querySelector('img');
+    var cap = item.querySelector('.gallery-caption');
+    galleryData.push({
+      src: img ? img.src : '',
+      alt: img ? img.alt : '',
+      caption: cap ? cap.textContent : ''
+    });
+  });
+
+  function openLightbox(index) {
+    currentIndex = index;
+    updateLightbox();
+    lightbox.classList.add('active');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function updateLightbox() {
+    var data = galleryData[currentIndex];
+    lightboxImg.src = data.src;
+    lightboxImg.alt = data.alt;
+    lightboxCaption.textContent = data.caption;
+    lightboxCounter.textContent = (currentIndex + 1) + ' / ' + galleryData.length;
+  }
+
+  function nextImage() {
+    currentIndex = (currentIndex + 1) % galleryData.length;
+    updateLightbox();
+  }
+
+  function prevImage() {
+    currentIndex = (currentIndex - 1 + galleryData.length) % galleryData.length;
+    updateLightbox();
+  }
+
+  galleryItems.forEach(function(item) {
+    item.addEventListener('click', function() {
+      var idx = parseInt(this.getAttribute('data-index'), 10);
+      openLightbox(idx);
+    });
+  });
+
+  lightbox.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+  lightbox.querySelector('.lightbox-prev').addEventListener('click', prevImage);
+  lightbox.querySelector('.lightbox-next').addEventListener('click', nextImage);
+
+  // Close on backdrop click
+  lightbox.addEventListener('click', function(e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  // Keyboard controls
+  document.addEventListener('keydown', function(e) {
+    if (!lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') nextImage();
+    if (e.key === 'ArrowLeft') prevImage();
+  });
+
+  // Touch swipe for lightbox on mobile
+  var touchStartX = 0;
+  lightbox.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+  lightbox.addEventListener('touchend', function(e) {
+    var diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) prevImage();
+      else nextImage();
+    }
+  }, { passive: true });
+
 })();
   </script>
 </body>
