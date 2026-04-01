@@ -235,6 +235,12 @@
       background: var(--copper); color: var(--cream);
       border-color: var(--copper);
     }
+    .panel-note {
+      font-size: 12px; color: var(--sand); opacity: 0.65;
+      font-style: italic; margin-top: 12px; line-height: 1.5;
+      padding: 10px 12px; background: rgba(0,0,0,0.15);
+      border-radius: 4px; border-left: 2px solid var(--copper);
+    }
 
     /* Hotspot Markers (Explore Mode) */
     .hotspot {
@@ -382,6 +388,7 @@
     <div class="panel-title" id="panel-title"></div>
     <div class="panel-status" id="panel-status"></div>
     <div class="panel-gallery" id="panel-gallery"></div>
+    <div class="panel-note" id="panel-note" style="display:none"></div>
     <a href="/apply" class="panel-cta" id="panel-cta">Inquire About This Space</a>
   </div>
 
@@ -554,7 +561,7 @@
         id: 'r192', label: 'Suite R192', sub: 'Retail · 192 SF',
         camera: { x: 42.5, y: 0, z: 32.8 },
         lookAt: { x: 40.5, y: -2.9, z: 42.2 },
-        suite: { type: 'Retail · 192 SF', title: 'Suite R192', status: 'available', images: [] }
+        suite: { type: 'Retail · 192 SF', title: 'Suite R192', status: 'available', images: [], note: 'Located at the corner of Restaurant A2. Not shown in this rendering.' }
       },
       {
         id: 'courtyard', label: 'Courtyard', sub: 'Peoria Arts District',
@@ -630,6 +637,7 @@
     const panelStatus = document.getElementById('panel-status');
     const panelGallery = document.getElementById('panel-gallery');
     const panelCta = document.getElementById('panel-cta');
+    const panelNote = document.getElementById('panel-note');
 
     function showInfoPanel(suite, showCtaButton) {
       panelType.textContent = suite.type;
@@ -645,6 +653,12 @@
           img.src = src; img.alt = suite.title;
           panelGallery.appendChild(img);
         });
+      }
+      if (suite.note) {
+        panelNote.textContent = suite.note;
+        panelNote.style.display = '';
+      } else {
+        panelNote.style.display = 'none';
       }
       panelCta.textContent = 'Inquire About This Space';
       panelCta.href = '/apply';
