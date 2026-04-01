@@ -505,87 +505,64 @@
     }
 
     // ══════════════════════════════════════════════
-    // ── Tour Stop Data ──
+    // ── Tour Stop Data (calibrated positions) ──
     // ══════════════════════════════════════════════
-    const TOUR_STOPS_RAW = [
+    const TOUR_STOPS = [
       {
         id: 'exterior', label: 'Exterior View', sub: 'Full Building',
-        angle: 135, dist: 1.5, height: 0.6, lookY: 0.15,
-        offsetX: 0, offsetZ: 0, suite: null
+        camera: { x: 106.4, y: 20.5, z: 62.4 },
+        lookAt: { x: -8.7, y: 0.1, z: 22.5 },
+        suite: null
       },
       {
-        id: 'courtyard', label: 'Entrance & Courtyard', sub: 'Shared Areas',
-        angle: 0, dist: 0.7, height: 0.3, lookY: 0.1,
-        offsetX: 0, offsetZ: 0.1, suite: null
+        id: 'entrance', label: 'Entrance', sub: 'Front Approach',
+        camera: { x: 75.2, y: 1.6, z: 37.8 },
+        lookAt: { x: -9, y: -3.9, z: 26.1 },
+        suite: null
       },
       {
         id: 'a1', label: 'Suite A1', sub: 'Restaurant · 640 SF',
-        angle: 200, dist: 0.55, height: 0.2, lookY: 0.08,
-        offsetX: -0.3, offsetZ: 0.25,
+        camera: { x: 35.7, y: 2.4, z: 67.5 },
+        lookAt: { x: 56.6, y: -3.5, z: 32.8 },
         suite: { type: 'Restaurant · 640 SF', title: 'Suite A1', status: 'available', images: [] }
       },
       {
         id: 'a2', label: 'Suite A2', sub: 'Restaurant · 640 SF',
-        angle: 240, dist: 0.55, height: 0.2, lookY: 0.08,
-        offsetX: -0.3, offsetZ: 0,
+        camera: { x: 28.7, y: 6.1, z: 72.7 },
+        lookAt: { x: 28.7, y: 5.7, z: 70.9 },
         suite: { type: 'Restaurant · 640 SF', title: 'Suite A2', status: 'available', images: [] }
       },
       {
         id: 'a3', label: 'Suite A3', sub: 'Restaurant · 640 SF',
-        angle: 280, dist: 0.55, height: 0.2, lookY: 0.08,
-        offsetX: -0.3, offsetZ: -0.25,
+        camera: { x: 15.6, y: 5.9, z: 72.6 },
+        lookAt: { x: 15.6, y: 5.6, z: 70.8 },
         suite: { type: 'Restaurant · 640 SF', title: 'Suite A3', status: 'available', images: [] }
       },
       {
         id: 'b-block', label: 'B-Block Retail', sub: 'B1–B4 · 160 SF Each',
-        angle: 45, dist: 0.55, height: 0.2, lookY: 0.08,
-        offsetX: 0.25, offsetZ: 0.2,
+        camera: { x: 64.1, y: 1.8, z: 42.2 },
+        lookAt: { x: 59.1, y: -0.3, z: 39.5 },
         suite: { type: 'Retail · 4 x 160 SF', title: 'Suites B1–B4', status: 'available', images: [] }
       },
       {
         id: 'r440', label: 'Suite R440', sub: 'Retail · 440 SF',
-        angle: 320, dist: 0.55, height: 0.2, lookY: 0.08,
-        offsetX: 0.25, offsetZ: -0.25,
+        camera: { x: 33.1, y: -1.1, z: 38.4 },
+        lookAt: { x: 33.4, y: -1.1, z: 37.9 },
         suite: { type: 'Retail · 440 SF', title: 'Suite R440', status: 'available', images: [] }
       },
       {
         id: 'r192', label: 'Suite R192', sub: 'Retail · 192 SF',
-        angle: 160, dist: 0.55, height: 0.2, lookY: 0.08,
-        offsetX: 0.15, offsetZ: -0.35,
+        camera: { x: 42.5, y: 0, z: 32.8 },
+        lookAt: { x: 40.5, y: -2.9, z: 42.2 },
         suite: { type: 'Retail · 192 SF', title: 'Suite R192', status: 'available', images: [] }
       },
       {
-        id: 'final', label: 'Jefferson House', sub: 'Peoria Arts District',
-        angle: 45, dist: 1.6, height: 0.7, lookY: 0.15,
-        offsetX: 0, offsetZ: 0, suite: null, showCta: true
+        id: 'courtyard', label: 'Courtyard', sub: 'Peoria Arts District',
+        camera: { x: 46, y: -0.4, z: 34.1 },
+        lookAt: { x: 33.6, y: -1.5, z: 33.7 },
+        suite: null, showCta: true
       }
     ];
-
-    let TOUR_STOPS = [];
-
-    function computeTourStops(modelSize) {
-      const maxDim = Math.max(modelSize.x, modelSize.y, modelSize.z);
-      TOUR_STOPS = TOUR_STOPS_RAW.map(raw => {
-        const rad = (raw.angle * Math.PI) / 180;
-        const r = maxDim * raw.dist;
-        const lookAt = {
-          x: modelSize.x * (raw.offsetX || 0),
-          y: modelSize.y * raw.lookY,
-          z: modelSize.z * (raw.offsetZ || 0)
-        };
-        return {
-          id: raw.id, label: raw.label, sub: raw.sub,
-          camera: {
-            x: lookAt.x + Math.cos(rad) * r,
-            y: modelSize.y * raw.height,
-            z: lookAt.z + Math.sin(rad) * r
-          },
-          lookAt,
-          suite: raw.suite,
-          showCta: raw.showCta
-        };
-      });
-    }
 
     let currentStop = 0;
     let isTourMode = true;
@@ -807,17 +784,7 @@
         camera.lookAt(0, 0, 0);
         controls.update();
 
-        computeTourStops(size);
         buildDots();
-
-        console.log('Model loaded:', {
-          size: { x: size.x.toFixed(1), y: size.y.toFixed(1), z: size.z.toFixed(1) },
-          maxDim: maxDim.toFixed(1)
-        });
-        console.log('Tour stops:', TOUR_STOPS.map(s => s.id + ': cam(' +
-          s.camera.x.toFixed(0) + ',' + s.camera.y.toFixed(0) + ',' + s.camera.z.toFixed(0) +
-          ') look(' + s.lookAt.x.toFixed(0) + ',' + s.lookAt.y.toFixed(0) + ',' + s.lookAt.z.toFixed(0) + ')'
-        ));
 
         loadingEl.classList.add('done');
         setTimeout(() => { loadingEl.style.display = 'none'; }, 800);
