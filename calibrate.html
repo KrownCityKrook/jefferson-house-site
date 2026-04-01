@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tour Stop Calibration — Jefferson House</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --navy: #1c273f; --sand: #e0d6ca; --cream: #f5f0ea; --copper: #b87333; --sage: #6b7f5e; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'DM Sans', sans-serif; }
+    body { background: #000; color: var(--sand); }
+
+    #canvas-container { position: fixed; inset: 0; z-index: 1; }
+    #canvas-container canvas { display: block; width: 100%; height: 100%; }
+
+    #panel {
+      position: fixed; top: 0; right: 0; bottom: 0; width: 340px; z-index: 10;
+      background: rgba(28,39,63,0.95); backdrop-filter: blur(16px);
+      border-left: 1px solid rgba(184,115,51,0.2);
+      overflow-y: auto; padding: 16px;
+    }
+    h2 { font-size: 14px; color: var(--copper); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+    .instructions { font-size: 12px; color: var(--sand); opacity: 0.6; margin-bottom: 16px; line-height: 1.5; }
+
+    .stop-item {
+      background: rgba(0,0,0,0.2); border: 1px solid rgba(184,115,51,0.1);
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 8px;
+    }
+    .stop-item.captured { border-color: var(--sage); }
+    .stop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .stop-name { font-size: 13px; font-weight: 600; color: var(--cream); }
+    .stop-sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--copper); }
+    .stop-status { font-size: 10px; color: var(--sage); font-weight: 600; }
+    .stop-coords {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: var(--sand); opacity: 0.5; margin-bottom: 6px; line-height: 1.4;
+    }
+    .stop-item.captured .stop-coords { opacity: 0.8; color: var(--sage); }
+
+    .stop-actions { display: flex; gap: 6px; }
+    .btn {
+      padding: 5px 12px; border: none; border-radius: 3px;
+      font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-set { background: var(--copper); color: var(--cream); }
+    .btn-set:hover { background: #d4955a; }
+    .btn-preview { background: rgba(107,127,94,0.3); color: var(--sage); }
+    .btn-preview:hover { background: rgba(107,127,94,0.5); }
+    .btn-clear { background: rgba(255,255,255,0.05); color: var(--sand); opacity: 0.5; }
+    .btn-clear:hover { opacity: 1; }
+
+    #output-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(184,115,51,0.15); }
+    #copy-btn {
+      width: 100%; padding: 10px; border: 1px solid var(--copper);
+      background: transparent; color: var(--copper); border-radius: 4px;
+      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+      transition: all 0.2s;
+    }
+    #copy-btn:hover { background: var(--copper); color: var(--cream); }
+    #copy-btn.copied { background: var(--sage); border-color: var(--sage); color: var(--cream); }
+    .progress-text { font-size: 11px; color: var(--sand); opacity: 0.5; text-align: center; margin-top: 8px; }
+
+    #live-pos {
+      position: fixed; bottom: 12px; left: 12px; z-index: 10;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      color: var(--copper); background: rgba(28,39,63,0.9);
+      padding: 8px 12px; border-radius: 4px;
+      border: 1px solid rgba(184,115,51,0.2);
+    }
+
+    #loading-cal {
+      position: fixed; inset: 0; z-index: 100; background: var(--navy);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    #loading-cal.done { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+    #loading-cal p { color: var(--sand); font-size: 13px; letter-spacing: 1px; }
+    #load-bar-track { width: 200px; height: 2px; background: rgba(224,214,202,0.15); margin-top: 16px; border-radius: 1px; overflow: hidden; }
+    #load-bar { width: 0%; height: 100%; background: var(--copper); transition: width 0.2s; }
+  </style>
+</head>
+<body>
+
+  <div id="loading-cal">
+    <p>Loading Model...</p>
+    <div id="load-bar-track"><div id="load-bar"></div></div>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <div id="live-pos">Orbit to position, then click "Set" for each stop</div>
+
+  <div id="panel">
+    <h2>Tour Stop Calibration</h2>
+    <p class="instructions">
+      Orbit the model (click+drag), pan (right-click+drag), zoom (scroll).
+      For each stop, position the camera where you want visitors to see it from, then click "Set".
+    </p>
+    <div id="stop-list"></div>
+    <div id="output-section">
+      <button id="copy-btn" onclick="copyOutput()">Copy All Positions</button>
+      <div class="progress-text" id="progress-text">0 / 9 stops set</div>
+    </div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    const STOPS = [
+      { id: 'exterior', name: 'Exterior View', sub: 'Wide shot of full building' },
+      { id: 'courtyard', name: 'Entrance & Courtyard', sub: 'Shared areas, front approach' },
+      { id: 'a1', name: 'Suite A1', sub: 'Restaurant · 640 SF' },
+      { id: 'a2', name: 'Suite A2', sub: 'Restaurant · 640 SF' },
+      { id: 'a3', name: 'Suite A3', sub: 'Restaurant · 640 SF' },
+      { id: 'b-block', name: 'B-Block Retail', sub: 'B1–B4 · 160 SF each' },
+      { id: 'r440', name: 'Suite R440', sub: 'Retail · 440 SF' },
+      { id: 'r192', name: 'Suite R192', sub: 'Retail · 192 SF' },
+      { id: 'final', name: 'Final Wide', sub: 'Pull back with Apply CTA' },
+    ];
+
+    const captured = {};
+
+    // Build UI
+    const stopList = document.getElementById('stop-list');
+    STOPS.forEach((stop, i) => {
+      const div = document.createElement('div');
+      div.className = 'stop-item';
+      div.id = 'stop-' + stop.id;
+      div.innerHTML = `
+        <div class="stop-header">
+          <div>
+            <div class="stop-name">${i + 1}. ${stop.name}</div>
+            <div class="stop-sub">${stop.sub}</div>
+          </div>
+          <div class="stop-status" id="status-${stop.id}"></div>
+        </div>
+        <div class="stop-coords" id="coords-${stop.id}">Not set</div>
+        <div class="stop-actions">
+          <button class="btn btn-set" onclick="window.captureStop('${stop.id}')">Set</button>
+          <button class="btn btn-preview" onclick="window.previewStop('${stop.id}')" id="preview-${stop.id}" disabled>Preview</button>
+          <button class="btn btn-clear" onclick="window.clearStop('${stop.id}')">Clear</button>
+        </div>
+      `;
+      stopList.appendChild(div);
+    });
+
+    // Scene
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000);
+
+    const camera = new THREE.PerspectiveCamera(50, (window.innerWidth - 340) / window.innerHeight, 0.1, 2000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth - 340, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    container.appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const dLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    dLight.position.set(50, 80, 50);
+    scene.add(dLight);
+    scene.add(new THREE.DirectionalLight(0xffffff, 0.3).translateX(-30).translateY(20).translateZ(-30));
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.maxPolarAngle = Math.PI / 2.05;
+
+    // Load model
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/');
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.setDRACOLoader(dracoLoader);
+
+    gltfLoader.load(
+      'jefferson-house-tour.glb',
+      (gltf) => {
+        const model = gltf.scene;
+        scene.add(model);
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+
+        model.position.sub(center);
+        controls.target.set(0, 0, 0);
+
+        const dist = maxDim * 1.2;
+        camera.position.set(dist, dist * 0.5, dist);
+        camera.lookAt(0, 0, 0);
+        controls.update();
+
+        document.getElementById('loading-cal').classList.add('done');
+      },
+      (progress) => {
+        if (progress.total > 0) {
+          document.getElementById('load-bar').style.width = ((progress.loaded / progress.total) * 100) + '%';
+        }
+      }
+    );
+
+    // Live position display
+    const livePos = document.getElementById('live-pos');
+
+    // Render
+    renderer.setAnimationLoop(() => {
+      controls.update();
+      renderer.render(scene, camera);
+      livePos.textContent =
+        'cam: ' + camera.position.x.toFixed(1) + ', ' + camera.position.y.toFixed(1) + ', ' + camera.position.z.toFixed(1) +
+        '  |  look: ' + controls.target.x.toFixed(1) + ', ' + controls.target.y.toFixed(1) + ', ' + controls.target.z.toFixed(1);
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = (window.innerWidth - 340) / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth - 340, window.innerHeight);
+    });
+
+    // Capture
+    window.captureStop = (id) => {
+      captured[id] = {
+        camera: { x: +camera.position.x.toFixed(1), y: +camera.position.y.toFixed(1), z: +camera.position.z.toFixed(1) },
+        lookAt: { x: +controls.target.x.toFixed(1), y: +controls.target.y.toFixed(1), z: +controls.target.z.toFixed(1) }
+      };
+      const el = document.getElementById('stop-' + id);
+      el.classList.add('captured');
+      document.getElementById('status-' + id).textContent = 'SET';
+      document.getElementById('coords-' + id).textContent =
+        'cam: ' + captured[id].camera.x + ', ' + captured[id].camera.y + ', ' + captured[id].camera.z +
+        '\nlook: ' + captured[id].lookAt.x + ', ' + captured[id].lookAt.y + ', ' + captured[id].lookAt.z;
+      document.getElementById('preview-' + id).disabled = false;
+      updateProgress();
+    };
+
+    window.previewStop = (id) => {
+      if (!captured[id]) return;
+      const c = captured[id];
+      camera.position.set(c.camera.x, c.camera.y, c.camera.z);
+      controls.target.set(c.lookAt.x, c.lookAt.y, c.lookAt.z);
+      controls.update();
+    };
+
+    window.clearStop = (id) => {
+      delete captured[id];
+      const el = document.getElementById('stop-' + id);
+      el.classList.remove('captured');
+      document.getElementById('status-' + id).textContent = '';
+      document.getElementById('coords-' + id).textContent = 'Not set';
+      document.getElementById('preview-' + id).disabled = true;
+      updateProgress();
+    };
+
+    function updateProgress() {
+      const count = Object.keys(captured).length;
+      document.getElementById('progress-text').textContent = count + ' / ' + STOPS.length + ' stops set';
+    }
+
+    window.copyOutput = () => {
+      const output = STOPS.map(s => {
+        const c = captured[s.id];
+        if (!c) return '  // ' + s.name + ': NOT SET';
+        return `  { id: '${s.id}', camera: { x: ${c.camera.x}, y: ${c.camera.y}, z: ${c.camera.z} }, lookAt: { x: ${c.lookAt.x}, y: ${c.lookAt.y}, z: ${c.lookAt.z} } }`;
+      }).join(',\n');
+
+      navigator.clipboard.writeText(output).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy All Positions'; btn.classList.remove('copied'); }, 2000);
+      });
+    };
+  </script>
+</body>
+</html>
