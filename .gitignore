@@ -1,0 +1,15 @@
+# Large binary files
+jefferson-house-tour.glb
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+*.swp
+*.swo
+*~
