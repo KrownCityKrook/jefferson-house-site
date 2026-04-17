@@ -192,7 +192,7 @@ function submitInquiry() {
   btn.disabled = true;
   btn.textContent = 'Sending...';
 
-  fetch('https://lastround.app/api/events/public/inquiry', {
+  fetch('/api/jh-events/public/inquiry', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

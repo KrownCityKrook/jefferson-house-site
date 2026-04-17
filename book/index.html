@@ -292,10 +292,9 @@ textarea.form-input { min-height: 80px; resize: vertical; }
 (function() {
 'use strict';
 
-// Config — change this slug to match the manager set up for JH interviews
-var SLUG = 'jefferson-house';
+// Config — hits the JH-native interview scheduler built into the Jefferson House hub
 var DURATION = 30; // fixed 30-min interviews
-var API = '/api/scheduler/public/' + SLUG;
+var API = '/api/jh-interviews/public';
 
 var sel = { date: null, time: null };
 var managerData = null;
@@ -311,7 +310,7 @@ function goToState(id) {
 window.goToState = goToState;
 
 // ── Init ──
-fetch(API)
+fetch(API + '/config')
   .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(function(data) {
     managerData = data;

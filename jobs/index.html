@@ -226,7 +226,7 @@ function submitApplication() {
   btn.disabled = true;
   btn.textContent = 'Submitting...';
 
-  fetch('https://lastround.app/api/jh-jobs/apply', {
+  fetch('/api/jh-jobs/apply', {
     method: 'POST',
     body: formData
   })
