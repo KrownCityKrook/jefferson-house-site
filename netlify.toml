@@ -1,0 +1,31 @@
+[build]
+  publish = "."
+  command = ""
+
+[build.environment]
+  GIT_LFS_ENABLED = "true"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/*.glb"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"
+
+[[redirects]]
+  from = "/book"
+  to = "/book/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/events"
+  to = "/events/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/jobs"
+  to = "/jobs/index.html"
+  status = 200
