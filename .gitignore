@@ -11,3 +11,6 @@ node_modules/
 *.swo
 *~
 .superpowers/
+
+# Local Netlify folder
+.netlify
