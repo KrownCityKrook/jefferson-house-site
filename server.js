@@ -1,7 +1,32 @@
 const express = require('express');
 const path = require('path');
+const https = require('https');
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Proxy /apply, /api/*, and /lease-editor/* to the main hub (replaces old Netlify redirects)
+const PROXY_TARGET = 'lastround.app';
+function proxyToHub(req, res) {
+  const targetPath = req.url;
+  const proxyReq = https.request({
+    hostname: PROXY_TARGET,
+    port: 443,
+    path: targetPath,
+    method: req.method,
+    headers: { ...req.headers, host: PROXY_TARGET },
+  }, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    proxyRes.pipe(res);
+  });
+  proxyReq.on('error', (err) => {
+    console.error('[proxy]', err.message);
+    if (!res.headersSent) res.status(502).send('Bad Gateway');
+  });
+  req.pipe(proxyReq);
+}
+app.use('/apply', proxyToHub);
+app.use('/api', proxyToHub);
+app.use('/lease-editor', proxyToHub);
 
 app.use(express.static(path.join(__dirname), {
   maxAge: '1h',
