@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3001;
 // Proxy /apply, /api/*, and /lease-editor/* to the main hub (replaces old Netlify redirects)
 const PROXY_TARGET = 'lastround.app';
 function proxyToHub(req, res) {
-  const targetPath = req.url;
+  const targetPath = req.originalUrl;
   const proxyReq = https.request({
     hostname: PROXY_TARGET,
     port: 443,
