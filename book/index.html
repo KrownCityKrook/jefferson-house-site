@@ -167,6 +167,9 @@ a:hover { color: var(--copper-light); }
 .form-input:focus { border-color: var(--copper); }
 .form-input::placeholder { color: var(--slate); }
 textarea.form-input { min-height: 80px; resize: vertical; }
+select.form-input { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%23b87333' stroke-width='1.5'><path d='M1 1l5 5 5-5'/></svg>"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+select.form-input option { background: #1c273f; color: #e0d6ca; }
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
 
 /* Buttons */
 .btn {
@@ -276,8 +279,48 @@ textarea.form-input { min-height: 80px; resize: vertical; }
         <input class="form-input" id="bookPhone" type="tel" placeholder="(555) 555-5555">
       </div>
       <div class="form-group">
-        <label>Tell us about your concept <span style="color:var(--slate);font-weight:400">(optional)</span></label>
-        <textarea class="form-input" id="bookNotes" placeholder="What kind of business are you looking to run? Food, retail, something else?"></textarea>
+        <label>Business name <span style="color:var(--slate);font-weight:400">(if you have one)</span></label>
+        <input class="form-input" id="bookBusinessName" placeholder="Your business or working name">
+      </div>
+      <div class="form-group">
+        <label>Concept</label>
+        <select class="form-input" id="bookBusinessType">
+          <option value="">Pick one…</option>
+          <option value="Food &amp; Drink">Food &amp; Drink</option>
+          <option value="Retail">Retail</option>
+          <option value="Service / Studio">Service / Studio</option>
+          <option value="Pop-up / Vendor">Pop-up / Vendor</option>
+          <option value="Other">Other / not sure yet</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Have you operated a business before?</label>
+        <select class="form-input" id="bookPriorExperience">
+          <option value="">Pick one…</option>
+          <option value="Yes — currently operating">Yes — currently operating</option>
+          <option value="Yes — previously">Yes — previously</option>
+          <option value="No — first venture">No — first venture</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Target opening timeline</label>
+        <select class="form-input" id="bookTargetTimeline">
+          <option value="">Pick one…</option>
+          <option value="Less than 3 months">Less than 3 months</option>
+          <option value="3–6 months">3–6 months</option>
+          <option value="6–12 months">6–12 months</option>
+          <option value="More than 12 months">More than 12 months</option>
+          <option value="Not sure yet">Not sure yet</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Anything else? <span style="color:var(--slate);font-weight:400">(optional)</span></label>
+        <textarea class="form-input" id="bookNotes" placeholder="Tell us anything that'd help us prep for the call."></textarea>
+      </div>
+      <!-- Honeypot — hidden from real users; bots crawling the form will fill it. -->
+      <div class="hp-field" aria-hidden="true">
+        <label>Website</label>
+        <input type="text" id="bookWebsiteHp" tabindex="-1" autocomplete="off">
       </div>
       <div id="formError" class="form-error" style="display:none"></div>
       <button class="btn btn-primary" id="btnConfirm" onclick="submitBooking()">Book Interview</button>
@@ -473,7 +516,12 @@ function submitBooking() {
   var name = document.getElementById('bookName').value.trim();
   var email = document.getElementById('bookEmail').value.trim();
   var phone = document.getElementById('bookPhone').value.trim();
+  var businessName = document.getElementById('bookBusinessName').value.trim();
+  var businessType = document.getElementById('bookBusinessType').value;
+  var priorExperience = document.getElementById('bookPriorExperience').value;
+  var targetTimeline = document.getElementById('bookTargetTimeline').value;
   var notes = document.getElementById('bookNotes').value.trim();
+  var hp = document.getElementById('bookWebsiteHp').value;
   var errEl = document.getElementById('formError');
   errEl.style.display = 'none';
 
@@ -488,8 +536,6 @@ function submitBooking() {
     return;
   }
 
-  var fullNotes = (phone ? 'Phone: ' + phone + '\n' : '') + notes;
-
   var btn = document.getElementById('btnConfirm');
   btn.disabled = true;
   btn.textContent = 'Booking...';
@@ -503,7 +549,13 @@ function submitBooking() {
       duration: DURATION,
       bookerName: name,
       bookerEmail: email,
-      notes: fullNotes
+      bookerPhone: phone,
+      businessName: businessName,
+      businessType: businessType,
+      priorExperience: priorExperience,
+      targetTimeline: targetTimeline,
+      notes: notes,
+      _websiteHp: hp
     })
   })
   .then(function(r) { return r.json(); })
