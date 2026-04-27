@@ -326,6 +326,12 @@ function renderCalendar() {
   var year = currentMonth.getFullYear();
   var month = currentMonth.getMonth();
   var today = new Date(); today.setHours(0,0,0,0);
+  // Earliest bookable day: server enforces a lead time (default 48 h);
+  // we mirror it in the calendar so users don't see clickable days that
+  // would yield zero slots after the server filter.
+  var leadHours = (managerData && typeof managerData.leadTimeHours === 'number') ? managerData.leadTimeHours : 48;
+  var earliestBookable = new Date(Date.now() + leadHours * 3600 * 1000);
+  earliestBookable.setHours(0,0,0,0);
   var first = new Date(year, month, 1);
   var last = new Date(year, month + 1, 0);
   var startDow = first.getDay();
@@ -347,7 +353,7 @@ function renderCalendar() {
   for (var day = 1; day <= last.getDate(); day++) {
     var dateObj = new Date(year, month, day);
     var dateStr = formatDate(dateObj);
-    var isPast = dateObj < today;
+    var isPast = dateObj < earliestBookable;
     var dayKey = days[dateObj.getDay()].toLowerCase();
     var hasAvail = managerData && managerData.availability && managerData.availability[dayKey];
     var isAvail = !isPast && hasAvail;
