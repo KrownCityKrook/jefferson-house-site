@@ -4,8 +4,11 @@ const https = require('https');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Proxy /apply, /api/*, and /lease-editor/* to the main hub (replaces old Netlify redirects)
-const PROXY_TARGET = 'lastround.app';
+// Proxy /apply, /api/*, and /lease-editor/* to the JH tenant hub.
+// Targeting the tenant subdomain (not bare lastround.app) so that
+// requireTenant in churchill-ops resolves to tenant 2 (jefferson-house)
+// instead of falling back to the platform-owner tenant.
+const PROXY_TARGET = 'jefferson-house.lastround.app';
 function proxyToHub(req, res) {
   const targetPath = req.originalUrl;
   const proxyReq = https.request({
