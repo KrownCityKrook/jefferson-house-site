@@ -97,7 +97,13 @@ a:hover { color: var(--copper-light); }
 }
 .cal-nav:hover { border-color: var(--copper); color: var(--copper); }
 .cal-nav:disabled { opacity: 0.25; cursor: not-allowed; }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 20px; }
+.cal-twomonth { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 640px) { .cal-twomonth { grid-template-columns: 1fr; gap: 16px; } }
+.cal-month-block .cal-month-label {
+  font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 600;
+  color: var(--copper); text-align: center; margin-bottom: 8px; letter-spacing: 0.5px;
+}
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 8px; }
 .cal-dow {
   font-size: 10px; color: var(--slate); text-align: center; padding: 8px 0;
   font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
@@ -111,6 +117,10 @@ a:hover { color: var(--copper-light); }
 .cal-day.available:hover { background: rgba(184,115,51,0.08); }
 .cal-day.selected { background: var(--copper); color: var(--navy-dark); font-weight: 700; }
 .cal-day.today { border: 1px solid rgba(184,115,51,0.3); }
+.cal-tz-note {
+  margin-top: 4px; font-size: 11px; color: var(--slate);
+  text-align: center; letter-spacing: 0.5px;
+}
 
 /* Time slots */
 .slot-section { margin-bottom: 14px; }
@@ -322,39 +332,24 @@ fetch(API + '/config')
   });
 
 // ── Calendar ──
-function renderCalendar() {
-  var year = currentMonth.getFullYear();
-  var month = currentMonth.getMonth();
-  var today = new Date(); today.setHours(0,0,0,0);
-  // Earliest bookable day: server enforces a lead time (default 48 h);
-  // we mirror it in the calendar so users don't see clickable days that
-  // would yield zero slots after the server filter.
-  var leadHours = (managerData && typeof managerData.leadTimeHours === 'number') ? managerData.leadTimeHours : 48;
-  var earliestBookable = new Date(Date.now() + leadHours * 3600 * 1000);
-  earliestBookable.setHours(0,0,0,0);
+var DAY_LBL = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function renderMonthBlock(year, month, today, earliestBookable) {
   var first = new Date(year, month, 1);
   var last = new Date(year, month + 1, 0);
   var startDow = first.getDay();
 
-  var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-  var html = '<div class="cal-header">';
-  html += '<button class="cal-nav" id="calPrev">&#8249;</button>';
-  html += '<span class="cal-month">' + monthNames[month] + ' ' + year + '</span>';
-  html += '<button class="cal-nav" id="calNext">&#8250;</button>';
-  html += '</div>';
+  var html = '<div class="cal-month-block">';
+  html += '<div class="cal-month-label">' + MONTH_NAMES[month] + ' ' + year + '</div>';
   html += '<div class="cal-grid">';
-
-  var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  for (var d = 0; d < 7; d++) html += '<div class="cal-dow">' + days[d] + '</div>';
-
+  for (var d = 0; d < 7; d++) html += '<div class="cal-dow">' + DAY_LBL[d] + '</div>';
   for (var i = 0; i < startDow; i++) html += '<div class="cal-day"></div>';
-
   for (var day = 1; day <= last.getDate(); day++) {
     var dateObj = new Date(year, month, day);
     var dateStr = formatDate(dateObj);
     var isPast = dateObj < earliestBookable;
-    var dayKey = days[dateObj.getDay()].toLowerCase();
+    var dayKey = DAY_LBL[dateObj.getDay()].toLowerCase();
     var hasAvail = managerData && managerData.availability && managerData.availability[dayKey];
     var isAvail = !isPast && hasAvail;
     var isToday = dateObj.getTime() === today.getTime();
@@ -367,15 +362,44 @@ function renderCalendar() {
 
     html += '<div class="' + cls + '"' + (isAvail ? ' data-date="' + dateStr + '" onclick="pickDate(\'' + dateStr + '\')"' : '') + '>' + day + '</div>';
   }
+  html += '</div></div>';
+  return html;
+}
 
+function renderCalendar() {
+  var year1 = currentMonth.getFullYear();
+  var month1 = currentMonth.getMonth();
+  var second = new Date(year1, month1 + 1, 1);
+  var year2 = second.getFullYear();
+  var month2 = second.getMonth();
+
+  var today = new Date(); today.setHours(0,0,0,0);
+  // Earliest bookable day: server enforces a lead time (default 48 h);
+  // we mirror it in the calendar so users don't see clickable days that
+  // would yield zero slots after the server filter.
+  var leadHours = (managerData && typeof managerData.leadTimeHours === 'number') ? managerData.leadTimeHours : 48;
+  var earliestBookable = new Date(Date.now() + leadHours * 3600 * 1000);
+  earliestBookable.setHours(0,0,0,0);
+
+  var rangeLabel = MONTH_NAMES[month1] + ' ' + year1 + ' – ' + MONTH_NAMES[month2] + (year1 !== year2 ? ' ' + year2 : '');
+
+  var html = '<div class="cal-header">';
+  html += '<button class="cal-nav" id="calPrev">&#8249;</button>';
+  html += '<span class="cal-month">' + rangeLabel + '</span>';
+  html += '<button class="cal-nav" id="calNext">&#8250;</button>';
   html += '</div>';
+  html += '<div class="cal-twomonth">';
+  html += renderMonthBlock(year1, month1, today, earliestBookable);
+  html += renderMonthBlock(year2, month2, today, earliestBookable);
+  html += '</div>';
+  html += '<div class="cal-tz-note">All times shown in Phoenix (MST · UTC-7)</div>';
 
   document.getElementById('calendarContainer').innerHTML = html;
 
   var prevBtn = document.getElementById('calPrev');
   var nextBtn = document.getElementById('calNext');
   var nowMonth = new Date(); nowMonth.setDate(1); nowMonth.setHours(0,0,0,0);
-  var curFirst = new Date(year, month, 1);
+  var curFirst = new Date(year1, month1, 1);
   prevBtn.disabled = curFirst <= nowMonth;
 
   prevBtn.onclick = function() { currentMonth.setMonth(currentMonth.getMonth() - 1); renderCalendar(); };
