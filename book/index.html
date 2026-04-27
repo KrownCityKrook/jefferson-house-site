@@ -229,6 +229,8 @@ select.form-input option { background: #1c273f; color: #e0d6ca; }
   <p>We'd love to meet you. We're booking interviews this month. Please select a date and time that works for you.</p>
 </div>
 
+<div id="rescheduleBanner" style="display:none;max-width:560px;margin:0 auto 16px;padding:14px 16px;border:1px solid #b87333;background:rgba(184,115,51,0.08);border-radius:10px;font-size:14px;color:#e0d6ca;line-height:1.5"></div>
+
 <div class="content">
 
   <!-- Loading -->
@@ -354,6 +356,12 @@ var managerData = null;
 var currentMonth = new Date();
 currentMonth.setDate(1);
 
+// Reschedule context — populated from ?reschedule=&token= when the user
+// arrives via a self-service reschedule link. Empty objects mean a fresh
+// booking. Once set, submitBooking forwards these fields and the original
+// gets marked rescheduled server-side.
+var reschedule = { id: '', token: '', original: null };
+
 // ── State Machine ──
 function goToState(id) {
   document.querySelectorAll('.state').forEach(function(s) { s.classList.remove('active'); });
@@ -362,17 +370,75 @@ function goToState(id) {
 }
 window.goToState = goToState;
 
+function getQueryParam(name) {
+  var m = new RegExp('[?&]' + name + '=([^&]+)').exec(window.location.search);
+  return m ? decodeURIComponent(m[1]) : '';
+}
+
+function showRescheduleBanner(text, isError) {
+  var el = document.getElementById('rescheduleBanner');
+  if (!el) return;
+  el.innerHTML = text;
+  el.style.borderColor = isError ? '#a14040' : '#b87333';
+  el.style.background = isError ? 'rgba(161,64,64,0.10)' : 'rgba(184,115,51,0.08)';
+  el.style.display = 'block';
+}
+
+function prefillFromBooking(b) {
+  function set(id, val) { var n = document.getElementById(id); if (n && val) n.value = val; }
+  set('bookName', b.bookerName);
+  set('bookEmail', b.bookerEmail);
+  set('bookPhone', b.bookerPhone);
+  set('bookBusinessName', b.businessName);
+  set('bookBusinessType', b.businessType);
+  set('bookPriorExperience', b.priorExperience);
+  set('bookTargetTimeline', b.targetTimeline);
+  set('bookNotes', b.notes);
+}
+
 // ── Init ──
-fetch(API + '/config')
-  .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-  .then(function(data) {
-    managerData = data;
-    renderCalendar();
-    goToState('stateSelect');
-  })
-  .catch(function() {
-    goToState('stateError');
-  });
+function bootCalendar() {
+  fetch(API + '/config')
+    .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(data) {
+      managerData = data;
+      renderCalendar();
+      goToState('stateSelect');
+    })
+    .catch(function() {
+      goToState('stateError');
+    });
+}
+
+(function init() {
+  var rid = getQueryParam('reschedule');
+  var rtok = getQueryParam('token');
+  if (rid && rtok) {
+    fetch(API + '/reschedule-info?id=' + encodeURIComponent(rid) + '&token=' + encodeURIComponent(rtok))
+      .then(function(r) { return r.json().then(function(j) { return { ok: r.ok, body: j }; }); })
+      .then(function(res) {
+        if (!res.ok || !res.body || !res.body.valid) {
+          var msg = (res.body && res.body.error) ? res.body.error : 'This reschedule link is no longer valid.';
+          showRescheduleBanner('<strong>Couldn\'t reschedule from your link.</strong><br>' + escHtml(msg) + ' You can still book a fresh time below.', true);
+        } else {
+          reschedule.id = rid;
+          reschedule.token = rtok;
+          reschedule.original = res.body.booking;
+          var origDate = niceDate(res.body.booking.originalDate);
+          var origTime = formatTime(res.body.booking.originalStartTime);
+          showRescheduleBanner('<strong>Rescheduling your interview.</strong><br>Original: <strong>' + origDate + '</strong> at <strong>' + origTime + '</strong>. Pick a new time below — your details are filled in for you.', false);
+          prefillFromBooking(res.body.booking);
+        }
+        bootCalendar();
+      })
+      .catch(function() {
+        showRescheduleBanner('<strong>Couldn\'t load your reschedule details.</strong><br>You can still book a fresh time below.', true);
+        bootCalendar();
+      });
+  } else {
+    bootCalendar();
+  }
+})();
 
 // ── Calendar ──
 var DAY_LBL = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -540,23 +606,29 @@ function submitBooking() {
   btn.disabled = true;
   btn.textContent = 'Booking...';
 
+  var bookBody = {
+    date: sel.date,
+    startTime: sel.time,
+    duration: DURATION,
+    bookerName: name,
+    bookerEmail: email,
+    bookerPhone: phone,
+    businessName: businessName,
+    businessType: businessType,
+    priorExperience: priorExperience,
+    targetTimeline: targetTimeline,
+    notes: notes,
+    _websiteHp: hp
+  };
+  if (reschedule.id && reschedule.token) {
+    bookBody.rescheduleFromId = reschedule.id;
+    bookBody.rescheduleFromToken = reschedule.token;
+  }
+
   fetch(API + '/book', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      date: sel.date,
-      startTime: sel.time,
-      duration: DURATION,
-      bookerName: name,
-      bookerEmail: email,
-      bookerPhone: phone,
-      businessName: businessName,
-      businessType: businessType,
-      priorExperience: priorExperience,
-      targetTimeline: targetTimeline,
-      notes: notes,
-      _websiteHp: hp
-    })
+    body: JSON.stringify(bookBody)
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
@@ -569,12 +641,17 @@ function submitBooking() {
     }
 
     var bk = data.booking;
+    var wasReschedule = !!(reschedule.id && reschedule.token);
     document.getElementById('confirmDetails').innerHTML =
       '<div class="confirm-row"><span class="confirm-label">Date</span><span class="confirm-value">' + niceDate(bk.date) + '</span></div>' +
       '<div class="confirm-row"><span class="confirm-label">Time</span><span class="confirm-value">' + formatTime(bk.startTime) + ' — ' + formatTime(bk.endTime) + '</span></div>' +
       '<div class="confirm-row"><span class="confirm-label">Duration</span><span class="confirm-value">' + bk.duration + ' minutes</span></div>' +
       '<div class="confirm-row"><span class="confirm-label">Name</span><span class="confirm-value">' + escHtml(bk.bookerName) + '</span></div>' +
       '<div class="confirm-row"><span class="confirm-label">Email</span><span class="confirm-value">' + escHtml(bk.bookerEmail) + '</span></div>';
+    if (wasReschedule) {
+      var titleEl = document.querySelector('#stateConfirm .confirm-title');
+      if (titleEl) titleEl.textContent = 'Rescheduled';
+    }
 
     goToState('stateConfirm');
   })
