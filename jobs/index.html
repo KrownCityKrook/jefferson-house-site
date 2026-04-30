@@ -36,6 +36,30 @@ a{color:var(--copper);text-decoration:none}a:hover{color:var(--copper-light)}
 .positions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:0 20px;max-width:600px;margin:0 auto 32px}
 .pos-tag{padding:8px 18px;border:1px solid rgba(184,115,51,0.2);border-radius:100px;font-size:12px;color:var(--copper);letter-spacing:1px;text-transform:uppercase;font-weight:500}
 
+/* Selectable position cards on the form itself */
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+.role-card{position:relative;padding:14px 16px;border:1px solid rgba(184,115,51,0.15);border-radius:8px;background:rgba(28,39,63,0.35);cursor:pointer;transition:all .2s var(--ease);text-align:left}
+.role-card:hover{border-color:var(--copper);transform:translateY(-1px)}
+.role-card.selected{border-color:var(--copper);background:rgba(184,115,51,0.08);box-shadow:inset 0 0 0 1px var(--copper)}
+.role-card-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--cream);margin-bottom:3px}
+.role-card-desc{font-size:11px;color:var(--sand-dark);line-height:1.5}
+.role-card.selected .role-card-title{color:var(--copper)}
+@media(max-width:520px){.role-grid{grid-template-columns:1fr}}
+
+/* Radio segment (Title 4 status) */
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg label{cursor:pointer}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg-pill{display:block;text-align:center;padding:10px 8px;border:1px solid rgba(184,115,51,0.15);border-radius:6px;background:rgba(28,39,63,0.4);color:var(--sand-dark);font-size:12px;font-weight:500;transition:all .2s}
+.seg label:hover .seg-pill{border-color:var(--copper);color:var(--cream)}
+.seg input:checked + .seg-pill{border-color:var(--copper);background:rgba(184,115,51,0.1);color:var(--copper)}
+
+/* Eligibility checkbox row */
+.check-row{display:flex;align-items:flex-start;gap:10px;padding:14px;border:1px solid rgba(184,115,51,0.15);border-radius:8px;background:rgba(28,39,63,0.35);cursor:pointer}
+.check-row input{margin-top:2px;flex-shrink:0;accent-color:var(--copper);width:18px;height:18px;cursor:pointer}
+.check-row-text{font-size:13px;color:var(--sand);line-height:1.5}
+.check-row-sub{font-size:11px;color:var(--slate);margin-top:3px}
+
 .content{max-width:560px;margin:0 auto;padding:0 20px 60px}
 .card{background:rgba(28,39,63,0.4);border:1px solid rgba(184,115,51,0.08);border-radius:8px;padding:28px;margin-bottom:16px;backdrop-filter:blur(8px)}
 .card-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--copper);letter-spacing:.5px;margin-bottom:20px}
@@ -126,22 +150,35 @@ textarea.form-input{min-height:100px;resize:vertical}
       <div class="card-title">The Role</div>
       <div class="form-group">
         <label>Position You're Applying For</label>
-        <select class="form-input" id="position">
-          <option value="">Select a position</option>
-          <option value="Management">Management</option>
-          <option value="Bar">Bar</option>
-          <option value="Floor Staff">Floor Staff</option>
-          <option value="Security">Security</option>
-          <option value="Other">Other</option>
-        </select>
+        <div class="role-grid" id="roleGrid">
+          <button type="button" class="role-card" data-role="Management"><div class="role-card-title">Management</div><div class="role-card-desc">Lead service, run shifts, own the floor.</div></button>
+          <button type="button" class="role-card" data-role="Bar"><div class="role-card-title">Bar</div><div class="role-card-desc">Pour craft cocktails, beer, wine. Title 4 needed.</div></button>
+          <button type="button" class="role-card" data-role="Floor Staff"><div class="role-card-title">Floor Staff</div><div class="role-card-desc">Hosts, servers, runners. Front of house.</div></button>
+          <button type="button" class="role-card" data-role="Security"><div class="role-card-title">Security</div><div class="role-card-desc">Door staff. Verify IDs, manage capacity.</div></button>
+          <button type="button" class="role-card" data-role="Kitchen"><div class="role-card-title">Kitchen</div><div class="role-card-desc">Cooks, prep, dish. Back of house.</div></button>
+          <button type="button" class="role-card" data-role="Other"><div class="role-card-title">Other</div><div class="role-card-desc">Something else? Tell us in the notes.</div></button>
+        </div>
+        <input type="hidden" id="position">
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Years in Hospitality <span class="opt">(optional)</span></label><input class="form-input" id="yearsExperience" type="number" min="0" max="60" placeholder="e.g. 4"></div>
+        <div class="form-group"><label>Earliest Start Date <span class="opt">(optional)</span></label><input class="form-input" id="earliestStart" type="date"></div>
       </div>
       <div class="form-group">
-        <label>Relevant Experience <span class="opt">(optional)</span></label>
-        <textarea class="form-input" id="experience" placeholder="Tell us a little about your background. Where have you worked? What did you do?"></textarea>
+        <label>Title 4 / TIPS Certification <span class="opt">(if applicable)</span></label>
+        <div class="seg">
+          <label><input type="radio" name="title4" value="yes"><span class="seg-pill">Certified</span></label>
+          <label><input type="radio" name="title4" value="willing"><span class="seg-pill">Willing to Get</span></label>
+          <label><input type="radio" name="title4" value="no"><span class="seg-pill">Not Yet</span></label>
+        </div>
       </div>
       <div class="form-group">
         <label>Availability <span class="opt">(optional)</span></label>
         <input class="form-input" id="availability" placeholder="e.g. Weekdays, Evenings, Weekends, Full-time, Part-time">
+      </div>
+      <div class="form-group">
+        <label>Relevant Experience <span class="opt">(optional)</span></label>
+        <textarea class="form-input" id="experience" placeholder="Tell us a little about your background. Where have you worked? What did you do?"></textarea>
       </div>
       <div class="form-group">
         <label>Anything Else? <span class="opt">(optional)</span></label>
@@ -159,6 +196,16 @@ textarea.form-input{min-height:100px;resize:vertical}
       </div>
     </div>
 
+    <div class="card">
+      <label class="check-row" for="eligible18">
+        <input type="checkbox" id="eligible18">
+        <span>
+          <span class="check-row-text">I confirm I am 18 years or older.</span>
+          <span class="check-row-sub">Required for hospitality roles. Bar and serving roles also require 19+ under Arizona law.</span>
+        </span>
+      </label>
+    </div>
+
     <div id="formError" class="form-error"></div>
     <button class="btn btn-primary" id="btnSubmit" onclick="submitApplication()">Submit Application</button>
   </div>
@@ -168,7 +215,7 @@ textarea.form-input{min-height:100px;resize:vertical}
     <div class="card">
       <div class="confirm-icon">&#10003;</div>
       <div class="confirm-title">Application Received</div>
-      <div class="confirm-msg">Thanks for applying. We'll review your application and reach out if there's a fit. We appreciate your interest in Jefferson House.</div>
+      <div class="confirm-msg">Thanks for applying. A confirmation is on its way to your inbox. We'll review your application and reach out directly if there's a fit. We appreciate your interest in Jefferson House.</div>
       <div class="confirm-ref" id="confirmRef"></div>
       <button class="btn btn-secondary" onclick="window.location.href='/'">Back to Jefferson House</button>
     </div>
@@ -194,6 +241,18 @@ fileInput.addEventListener('change', function() {
   }
 });
 
+// Role card selection — click toggles the card and writes to the hidden input
+// so existing form-data flow keeps working unchanged.
+var roleCards = document.querySelectorAll('.role-card');
+var positionInput = document.getElementById('position');
+roleCards.forEach(function(card) {
+  card.addEventListener('click', function() {
+    roleCards.forEach(function(c) { c.classList.remove('selected'); });
+    card.classList.add('selected');
+    positionInput.value = card.getAttribute('data-role');
+  });
+});
+
 function submitApplication() {
   var firstName = document.getElementById('firstName').value.trim();
   var lastName = document.getElementById('lastName').value.trim();
@@ -203,13 +262,18 @@ function submitApplication() {
   var experience = document.getElementById('experience').value.trim();
   var availability = document.getElementById('availability').value.trim();
   var notes = document.getElementById('notes').value.trim();
+  var yearsExperience = document.getElementById('yearsExperience').value.trim();
+  var earliestStart = document.getElementById('earliestStart').value;
+  var title4 = (document.querySelector('input[name="title4"]:checked') || {}).value || '';
+  var eligible18 = document.getElementById('eligible18').checked;
   var resume = document.getElementById('resumeFile').files[0];
   var errEl = document.getElementById('formError');
   errEl.style.display = 'none';
 
   if (!firstName || !lastName) { errEl.textContent = 'Please enter your full name.'; errEl.style.display = 'block'; return; }
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent = 'Please enter a valid email address.'; errEl.style.display = 'block'; return; }
-  if (!position) { errEl.textContent = 'Please select a position.'; errEl.style.display = 'block'; return; }
+  if (!position) { errEl.textContent = 'Please pick a position.'; errEl.style.display = 'block'; return; }
+  if (!eligible18) { errEl.textContent = 'Please confirm you are 18 or older.'; errEl.style.display = 'block'; return; }
 
   var formData = new FormData();
   formData.append('first_name', firstName);
@@ -220,6 +284,10 @@ function submitApplication() {
   formData.append('experience', experience);
   formData.append('availability', availability);
   formData.append('notes', notes);
+  formData.append('eligible_18', eligible18 ? '1' : '0');
+  if (yearsExperience) formData.append('years_experience', yearsExperience);
+  if (earliestStart) formData.append('earliest_start', earliestStart);
+  if (title4) formData.append('title_4_status', title4);
   if (resume) formData.append('resume', resume);
 
   var btn = document.getElementById('btnSubmit');
