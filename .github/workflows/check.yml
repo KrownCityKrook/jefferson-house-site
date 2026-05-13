@@ -1,0 +1,28 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Syntax check server.js
+        run: |
+          if [ -f server.js ]; then node --check server.js; else echo "no server.js"; fi
+      - name: Syntax check all .js
+        run: |
+          find . -path ./node_modules -prune -o -name '*.js' -print | while read f; do
+            node --check "$f" || exit 1
+          done
+      - name: Run tests
+        run: npm test --if-present
