@@ -6,37 +6,36 @@
 <title>Plan an Event — Jefferson House</title>
 <script src="/date-picker.js" defer></script>
 <meta name="description" content="Host your next event at Jefferson House. Open-air courtyard, live stage, bar, and three kitchens in Peoria's Arts District.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/fonts/brand.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='60' height='60' x='20' y='20' rx='4' fill='%23b87333' transform='rotate(45 50 50)'/%3E%3C/svg%3E">
 <style>
 :root {
-  --navy:#1c273f;--navy-light:#2a3a58;--navy-dark:#0f1623;
-  --sand:#e0d6ca;--sand-dark:#c8bba9;--cream:#f5f0ea;--ivory:#faf7f3;
-  --copper:#b87333;--copper-light:#d4955a;
+  --navy:#18243C;--navy-light:#2a3a58;--navy-dark:#0E1525;
+  --sand:#e0d6ca;--sand-bright:#f0e5d7;--sand-dark:#c8bba9;--cream:#f5f0ea;--ivory:#faf7f3;
+  --copper:#b87333;--copper-light:#d4955a;--brass:#c9954a;
   --sage:#6b7f5e;--slate:#7a7d80;--red:#b85333;
+  --fraunces-vs:"SOFT" 40,"WONK" 1,"opsz" 144;
   --ease:cubic-bezier(0.16,1,0.3,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
-body{font-family:'DM Sans',sans-serif;background:var(--navy-dark);color:var(--sand);line-height:1.6}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--navy-dark);color:var(--sand);line-height:1.6}
 a{color:var(--copper);text-decoration:none}a:hover{color:var(--copper-light)}
 ::selection{background:rgba(184,115,51,0.3);color:var(--cream)}
 
 .header{padding:20px clamp(20px,4vw,48px);border-bottom:1px solid rgba(184,115,51,0.06);display:flex;justify-content:space-between;align-items:center;background:rgba(15,22,35,0.6);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100}
-.header-logo{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--sand)}
+.header-logo{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fraunces-vs);font-size:17px;font-weight:700;color:var(--sand)}
 .header-back{font-size:12px;color:var(--sand-dark);letter-spacing:1px;text-transform:uppercase}
 .header-back:hover{color:var(--copper)}
 
 .hero{text-align:center;padding:clamp(48px,8vw,80px) clamp(20px,4vw,48px) clamp(32px,5vw,48px);max-width:640px;margin:0 auto}
 .hero-label{font-size:10px;color:var(--copper);text-transform:uppercase;letter-spacing:4px;font-weight:500;margin-bottom:16px}
-.hero h1{font-family:'Playfair Display',serif;font-size:clamp(24px,4.5vw,36px);font-weight:700;color:var(--sand);line-height:1.2;margin-bottom:14px}
+.hero h1{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fraunces-vs);font-size:clamp(24px,4.5vw,36px);font-weight:700;color:var(--sand);line-height:1.2;margin-bottom:14px}
 .hero p{font-size:15px;color:var(--sand-dark);line-height:1.75}
 
 .content{max-width:560px;margin:0 auto;padding:0 20px 60px}
 .card{background:rgba(28,39,63,0.4);border:1px solid rgba(184,115,51,0.08);border-radius:8px;padding:28px;margin-bottom:16px;backdrop-filter:blur(8px)}
-.card-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--copper);letter-spacing:.5px;margin-bottom:20px}
+.card-title{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fraunces-vs);font-size:15px;font-weight:700;color:var(--copper);letter-spacing:.5px;margin-bottom:20px}
 
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .form-group{margin-bottom:14px}
@@ -65,12 +64,18 @@ textarea.form-input{min-height:100px;resize:vertical}
 .form-error{font-size:12px;color:var(--red);margin-top:8px;display:none}
 
 .confirm-icon{font-size:40px;text-align:center;margin-bottom:12px;color:var(--sage)}
-.confirm-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--sage);text-align:center;margin-bottom:16px}
+.confirm-title{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fraunces-vs);font-size:22px;font-weight:700;color:var(--sage);text-align:center;margin-bottom:16px}
 .confirm-msg{text-align:center;color:var(--sand-dark);font-size:14px;line-height:1.75;margin-bottom:24px}
-.confirm-ref{text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--copper);letter-spacing:1px;margin-bottom:24px}
+.confirm-ref{text-align:center;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--copper);letter-spacing:1px;margin-bottom:24px}
 
 .state{display:none}.state.active{display:block;animation:fadeUp .4s var(--ease)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* BRAND 2026 — weight tuning + Sansita for tracked caps */
+.header-logo{font-weight:500}
+.hero h1,.confirm-title{font-weight:600}
+.card-title{font-family:'Sansita',sans-serif;font-style:normal;font-variation-settings:normal;font-weight:700;text-transform:uppercase;letter-spacing:.18em;font-size:12px}
+.header-back,.hero-label,.form-group label,.tag-label,.btn{font-family:'Sansita',sans-serif;font-weight:700}
 
 @media(max-width:520px){
   .form-row{grid-template-columns:1fr}

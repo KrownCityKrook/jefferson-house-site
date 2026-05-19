@@ -5,24 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Book an Interview — Jefferson House</title>
 <meta name="description" content="Interested in being an operator at Jefferson House? Book an interview to meet with our team.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/fonts/brand.css">
 <style>
 :root {
-  --navy: #1c273f; --navy-light: #2a3a58; --navy-dark: #0f1623;
-  --sand: #e0d6ca; --sand-dark: #c8bba9;
+  --navy: #18243C; --navy-light: #2a3a58; --navy-dark: #0E1525;
+  --sand: #e0d6ca; --sand-bright: #f0e5d7; --sand-dark: #c8bba9;
   --cream: #f5f0ea; --ivory: #faf7f3;
   --copper: #b87333; --copper-light: #d4955a; --copper-dim: rgba(184,115,51,0.12);
+  --brass: #c9954a;
   --sage: #6b7f5e; --slate: #7a7d80;
   --green: #6b7f5e; --red: #b85333;
   --radius: 8px;
+  --fraunces-vs: "SOFT" 40, "WONK" 1, "opsz" 144;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 body {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--navy-dark); color: var(--sand); min-height: 100vh;
   line-height: 1.6;
 }
@@ -38,7 +38,7 @@ a:hover { color: var(--copper-light); }
   background: rgba(15,22,35,0.6); backdrop-filter: blur(20px);
   position: sticky; top: 0; z-index: 100;
 }
-.header-logo { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--sand); }
+.header-logo { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-variation-settings: var(--fraunces-vs); font-size: 17px; font-weight: 700; color: var(--sand); }
 .header-back { font-size: 12px; color: var(--sand-dark); letter-spacing: 1px; text-transform: uppercase; }
 .header-back:hover { color: var(--copper); }
 
@@ -52,7 +52,7 @@ a:hover { color: var(--copper-light); }
   letter-spacing: 4px; font-weight: 500; margin-bottom: 16px;
 }
 .intro h1 {
-  font-family: 'Playfair Display', serif; font-size: clamp(22px, 4vw, 32px);
+  font-family: 'Fraunces', Georgia, serif; font-style: italic; font-variation-settings: var(--fraunces-vs); font-size: clamp(22px, 4vw, 32px);
   font-weight: 700; color: var(--sand); line-height: 1.3; margin-bottom: 14px;
 }
 .intro p {
@@ -69,7 +69,7 @@ a:hover { color: var(--copper-light); }
   backdrop-filter: blur(8px);
 }
 .card-title {
-  font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700;
+  font-family: 'Fraunces', Georgia, serif; font-style: italic; font-variation-settings: var(--fraunces-vs); font-size: 15px; font-weight: 700;
   color: var(--copper); letter-spacing: 0.5px; margin-bottom: 16px;
 }
 
@@ -89,7 +89,7 @@ a:hover { color: var(--copper-light); }
 
 /* Calendar */
 .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-.cal-month { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--sand); }
+.cal-month { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-variation-settings: var(--fraunces-vs); font-size: 16px; font-weight: 600; color: var(--sand); }
 .cal-nav {
   background: none; border: 1px solid rgba(184,115,51,0.15); border-radius: 50%;
   width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
@@ -100,7 +100,7 @@ a:hover { color: var(--copper-light); }
 .cal-twomonth { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 @media (max-width: 640px) { .cal-twomonth { grid-template-columns: 1fr; gap: 16px; } }
 .cal-month-block .cal-month-label {
-  font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 600;
+  font-family: 'Fraunces', Georgia, serif; font-style: italic; font-variation-settings: var(--fraunces-vs); font-size: 14px; font-weight: 600;
   color: var(--copper); text-align: center; margin-bottom: 8px; letter-spacing: 0.5px;
 }
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 8px; }
@@ -191,7 +191,7 @@ select.form-input option { background: #1c273f; color: #e0d6ca; }
 /* Confirmation */
 .confirm-icon { font-size: 40px; text-align: center; margin-bottom: 12px; color: var(--sage); }
 .confirm-title {
-  font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700;
+  font-family: 'Fraunces', Georgia, serif; font-style: italic; font-variation-settings: var(--fraunces-vs); font-size: 22px; font-weight: 700;
   color: var(--sage); text-align: center; margin-bottom: 20px;
 }
 .confirm-row {
@@ -207,6 +207,12 @@ select.form-input option { background: #1c273f; color: #e0d6ca; }
 }
 
 .form-error { font-size: 12px; color: var(--red); margin-top: 8px; }
+
+/* BRAND 2026 — weight tuning + Sansita for tracked caps */
+.header-logo { font-weight: 500; }
+.intro h1, .confirm-title { font-weight: 600; }
+.card-title { font-family: 'Sansita', sans-serif; font-style: normal; font-variation-settings: normal; font-weight: 700; text-transform: uppercase; letter-spacing: .18em; font-size: 12px; }
+.header-back, .intro-label, .cal-dow, .slot-label, .change-btn, .form-group label, .btn { font-family: 'Sansita', sans-serif; font-weight: 700; }
 
 /* Responsive */
 @media (max-width: 520px) {

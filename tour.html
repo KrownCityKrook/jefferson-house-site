@@ -6,25 +6,24 @@
   <title>Virtual Tour — Jefferson House</title>
   <meta name="description" content="Explore Jefferson House in 3D — restaurant and retail spaces in Peoria's Arts District.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='8' y='8' width='16' height='16' rx='2' fill='%23b87333' transform='rotate(45 16 16)'/%3E%3C/svg%3E">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/fonts/brand.css">
   <style>
     :root {
       --black: #000;
-      --navy: #1c273f;
-      --navy-light: #253555;
+      --navy: #18243C;
+      --navy-light: #2A3A58;
       --sand: #e0d6ca;
       --cream: #f5f0ea;
       --copper: #b87333;
       --sage: #6b7f5e;
+      --fraunces-vs: "SOFT" 40, "WONK" 1, "opsz" 144;
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%; overflow: hidden; }
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       background: var(--black);
       color: var(--sand);
       -webkit-font-smoothing: antialiased;
@@ -77,7 +76,7 @@
       text-align: center; padding: 32px;
     }
     #no-webgl h2 {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Fraunces', Georgia, serif; font-style: italic; font-variation-settings: var(--fraunces-vs);
       font-size: 28px; color: var(--cream); margin-bottom: 12px;
     }
     #no-webgl p { color: var(--sand); opacity: 0.7; max-width: 400px; }
@@ -94,7 +93,7 @@
     }
     #tour-nav.visible { opacity: 1; }
     .nav-brand {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Fraunces', Georgia, serif; font-style: italic; font-variation-settings: var(--fraunces-vs);
       font-size: 15px; font-weight: 700;
       color: var(--sand); letter-spacing: 0.5px;
     }
@@ -104,7 +103,7 @@
     }
     .mode-btn {
       padding: 6px 16px; border: none; border-radius: 3px;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       font-size: 11px; font-weight: 500;
       letter-spacing: 1.5px; text-transform: uppercase;
       color: var(--sand); opacity: 0.5;
@@ -151,7 +150,7 @@
     #stop-label {
       position: fixed; bottom: 80px; left: 50%; z-index: 50;
       transform: translateX(-50%);
-      font-family: 'Playfair Display', serif;
+      font-family: 'Fraunces', Georgia, serif; font-style: italic; font-variation-settings: var(--fraunces-vs);
       font-size: 20px; color: var(--cream);
       text-align: center; white-space: nowrap;
       opacity: 0; transition: opacity 0.4s ease;
@@ -159,7 +158,7 @@
     }
     #stop-label.visible { opacity: 1; }
     #stop-label .stop-sub {
-      display: block; font-family: 'JetBrains Mono', monospace;
+      display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 11px; color: var(--copper);
       letter-spacing: 1.5px; margin-top: 4px;
       text-transform: uppercase;
@@ -189,13 +188,13 @@
     }
     .panel-close:hover { background: var(--copper); color: var(--cream); }
     .panel-type {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 12px; color: var(--copper);
       letter-spacing: 1.5px; text-transform: uppercase;
       margin-bottom: 8px;
     }
     .panel-title {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Fraunces', Georgia, serif; font-style: italic; font-variation-settings: var(--fraunces-vs);
       font-size: 22px; color: var(--cream);
       margin-bottom: 16px;
     }
@@ -224,7 +223,7 @@
       display: block; width: 100%; margin-top: 24px;
       padding: 12px 24px; border: 1px solid rgba(184,115,51,0.4);
       background: transparent; color: var(--copper);
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       font-size: 11px; font-weight: 600;
       letter-spacing: 2px; text-transform: uppercase;
       text-align: center; border-radius: 3px;
@@ -308,7 +307,7 @@
     }
     #controls-guide.visible { opacity: 1; pointer-events: auto; }
     .guide-title {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       font-size: 10px; font-weight: 600;
       letter-spacing: 1.5px; text-transform: uppercase;
       color: var(--copper); margin-bottom: 10px;
@@ -319,7 +318,7 @@
     }
     .guide-row:last-child { margin-bottom: 0; }
     .guide-key {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 10px; color: var(--cream);
       background: rgba(255,255,255,0.08);
       padding: 2px 6px; border-radius: 3px;
@@ -339,6 +338,18 @@
         max-width: none;
       }
     }
+
+    /* BRAND 2026 — weight tuning + Sansita for tracked caps */
+    .nav-brand { font-weight: 500; }
+    #no-webgl h2, .panel-title { font-weight: 600; }
+    #stop-label { font-weight: 500; }
+    #loading-text,
+    .mode-btn,
+    #stop-label .stop-sub,
+    .panel-type,
+    .panel-status,
+    .panel-cta,
+    .guide-title { font-family: 'Sansita', sans-serif; font-weight: 700; }
   </style>
 </head>
 <body>
