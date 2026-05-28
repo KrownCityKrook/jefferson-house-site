@@ -27,17 +27,6 @@ function proxyToHub(req, res) {
   });
   req.pipe(proxyReq);
 }
-
-// Canonicalize the bare apex to www, preserving the full path. GoDaddy registrar
-// forwarding only redirects the apex root and 404s deep paths (e.g. /apply); this
-// fixes that once the apex DNS points at this service. www traffic is untouched.
-app.use((req, res, next) => {
-  if (req.headers.host === 'jeffersonhouseaz.com') {
-    return res.redirect(301, 'https://www.jeffersonhouseaz.com' + req.originalUrl);
-  }
-  next();
-});
-
 app.use('/apply', proxyToHub);
 app.use('/api', proxyToHub);
 app.use('/lease-editor', proxyToHub);
