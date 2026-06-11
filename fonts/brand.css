@@ -1,10 +1,12 @@
 /* Jefferson House — brand fonts (self-hosted)
    Source: Brand Summary 2026 · Buffalo Nickel Co. + typography spec PDF
-   Fraunces italic (titles), Sansita Bold (section markers), Inter (body). */
+   Fraunces italic (titles), Sansita Bold (section markers), Inter (body).
+   woff2 = latin subsets built via fontTools; ttf kept as fallback. */
 
 @font-face {
   font-family: 'Fraunces';
-  src: url('/fonts/Fraunces-Variable.ttf') format('truetype-variations'),
+  src: url('/fonts/Fraunces-Variable.woff2') format('woff2-variations'),
+       url('/fonts/Fraunces-Variable.woff2') format('woff2'),
        url('/fonts/Fraunces-Variable.ttf') format('truetype');
   font-weight: 100 900;
   font-style: normal;
@@ -12,7 +14,8 @@
 }
 @font-face {
   font-family: 'Fraunces';
-  src: url('/fonts/Fraunces-Italic-Variable.ttf') format('truetype-variations'),
+  src: url('/fonts/Fraunces-Italic-Variable.woff2') format('woff2-variations'),
+       url('/fonts/Fraunces-Italic-Variable.woff2') format('woff2'),
        url('/fonts/Fraunces-Italic-Variable.ttf') format('truetype');
   font-weight: 100 900;
   font-style: italic;
@@ -20,21 +23,24 @@
 }
 @font-face {
   font-family: 'Sansita';
-  src: url('/fonts/Sansita-Regular.ttf') format('truetype');
+  src: url('/fonts/Sansita-Regular.woff2') format('woff2'),
+       url('/fonts/Sansita-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Sansita';
-  src: url('/fonts/Sansita-Bold.ttf') format('truetype');
+  src: url('/fonts/Sansita-Bold.woff2') format('woff2'),
+       url('/fonts/Sansita-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-Variable.ttf') format('truetype-variations'),
+  src: url('/fonts/Inter-Variable.woff2') format('woff2-variations'),
+       url('/fonts/Inter-Variable.woff2') format('woff2'),
        url('/fonts/Inter-Variable.ttf') format('truetype');
   font-weight: 100 900;
   font-style: normal;

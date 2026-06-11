@@ -31,6 +31,10 @@ app.use('/apply', proxyToHub);
 app.use('/api', proxyToHub);
 app.use('/lease-editor', proxyToHub);
 
+// Gzip text responses (HTML/CSS/JS/SVG/XML) — smaller payloads, better CWV
+let compression;
+try { compression = require('compression'); app.use(compression()); } catch (e) { /* optional */ }
+
 app.use(express.static(path.join(__dirname), {
   maxAge: '1h',
   setHeaders: (res, filePath) => {
@@ -41,6 +45,10 @@ app.use(express.static(path.join(__dirname), {
     // Long cache on large assets
     if (filePath.endsWith('.glb')) {
       res.setHeader('Cache-Control', 'public, max-age=604800');
+    }
+    // Immutable cache on optimized images + webfonts (filenames change when content does)
+    if (/img[\/\\]opt[\/\\]/.test(filePath) || filePath.endsWith('.woff2')) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     }
   }
 }));
