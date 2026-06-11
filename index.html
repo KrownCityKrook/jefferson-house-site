@@ -176,7 +176,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 
 /* STAT BAND */
 .stats{background:var(--paper);padding:clamp(2.6rem,5vw,4rem) clamp(1.5rem,5vw,4rem);border-bottom:1px solid var(--line-soft)}
-.stats-inner{max-width:1140px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(14px,2.5vw,32px);text-align:center}
+.stats-inner{max-width:980px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,2.5vw,32px);text-align:center}
+.stat-l{max-width:24ch;margin-left:auto;margin-right:auto}
 .stat-n{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fvs);font-weight:600;font-size:clamp(2.6rem,5vw,4.4rem);line-height:1;color:var(--ink)}
 .stat-n sup{font-size:.45em;color:var(--copper);font-style:normal;top:-.7em}
 .stat-l{font-family:'Sansita',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--copper);margin-top:9px}
@@ -371,7 +372,6 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
   .g-grid{grid-auto-rows:clamp(200px,38vw,300px)}
   .gs-a,.gs-b,.gs-c,.gs-d{grid-column:span 12}
   .lease-grid{grid-template-columns:1fr;max-width:560px}
-  .stats-inner{grid-template-columns:repeat(3,1fr);gap:24px}
 }
 @media(max-width:640px){
   .nav-links{display:none}
@@ -476,10 +476,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
   <div class="stats-inner">
     <div class="a" data-d="u"><div class="stat-n">3</div><div class="stat-l">Kitchens</div></div>
     <div class="a" data-d="u"><div class="stat-n">6</div><div class="stat-l">Retail &amp; Eatery Spots</div></div>
-    <div class="a" data-d="u"><div class="stat-n">1</div><div class="stat-l">Bar</div></div>
-    <div class="a" data-d="u"><div class="stat-n">1</div><div class="stat-l">Stage</div></div>
-    <div class="a" data-d="u"><div class="stat-n">1</div><div class="stat-l">Courtyard</div></div>
-    <div class="a" data-d="u"><div class="stat-n">1</div><div class="stat-l">Splash Pad</div></div>
+    <div class="a" data-d="u"><div class="stat-n">1</div><div class="stat-l">Bar &middot; Stage &middot; Courtyard &middot; Splash Pad</div></div>
   </div>
 </section>
 
