@@ -182,14 +182,20 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 .build-head .eyebrow{justify-content:center;margin-bottom:16px}
 .build-head h2{font-size:clamp(2rem,5vw,3.2rem);color:var(--ink);margin-bottom:14px}
 .build-head p{color:var(--ink-soft);font-size:15.5px;line-height:1.7}
-.build-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1rem,2.4vw,1.75rem);max-width:1140px;margin:0 auto}
-.build-card{margin:0;display:flex;flex-direction:column}
-.build-pic{aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:var(--sand);box-shadow:0 14px 32px rgba(24,36,60,.13)}
+.build-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(1rem,2.4vw,1.75rem);max-width:1160px;margin:0 auto}
+.build-card{margin:0;display:flex;flex-direction:column;flex:1 1 300px;max-width:360px}
+.build-pic{aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:var(--sand);box-shadow:0 14px 32px rgba(24,36,60,.13)}
 .build-pic img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s var(--ease)}
 .build-card:hover .build-pic img{transform:scale(1.04)}
 .build-date{font-family:'Sansita',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--copper-deep);margin:16px 0 6px}
 .build-cap{color:var(--ink);font-size:14.5px;line-height:1.55}
-@media(max-width:820px){.build-grid{grid-template-columns:1fr;max-width:460px}}
+.build-now{max-width:1160px;margin:clamp(1.6rem,3vw,2.4rem) auto 0}
+.build-now-pic{border-radius:14px;overflow:hidden;background:var(--sand);box-shadow:0 14px 32px rgba(24,36,60,.13)}
+.build-now-pic img{width:100%;height:auto;display:block}
+.build-now figcaption{margin-top:14px;text-align:center}
+.build-now .build-date{margin-top:0}
+@media(max-width:820px){.build-card{flex-basis:46%}}
+@media(max-width:560px){.build-card{flex-basis:100%;max-width:none}}
 .mq-c{flex-shrink:0;display:flex;align-items:center;white-space:nowrap}
 .mq-i{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fvs);font-weight:500;font-size:17px;color:var(--ink);padding:0 8px}
 .mq-d{color:var(--copper);font-size:9px;padding:0 16px}
@@ -666,8 +672,21 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
     <figure class="build-card a" data-d="u">
       <div class="build-pic">
         <picture>
-          <source type="image/avif" srcset="/img/opt/build-mar05-corner-480.avif 480w, /img/opt/build-mar05-corner-800.avif 800w, /img/opt/build-mar05-corner-1200.avif 1200w" sizes="(max-width:820px) 92vw, 33vw">
-          <source type="image/webp" srcset="/img/opt/build-mar05-corner-480.webp 480w, /img/opt/build-mar05-corner-800.webp 800w, /img/opt/build-mar05-corner-1200.webp 1200w" sizes="(max-width:820px) 92vw, 33vw">
+          <source type="image/avif" srcset="/img/opt/build-2025-12-excavation-480.avif 480w, /img/opt/build-2025-12-excavation-800.avif 800w, /img/opt/build-2025-12-excavation-1200.avif 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <source type="image/webp" srcset="/img/opt/build-2025-12-excavation-480.webp 480w, /img/opt/build-2025-12-excavation-800.webp 800w, /img/opt/build-2025-12-excavation-1200.webp 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <img src="/img/opt/build-2025-12-excavation-800.jpg" width="3024" height="4032" alt="An excavator and loader moving dirt on the cleared Jefferson House lot, December 2025" loading="lazy" decoding="async">
+        </picture>
+      </div>
+      <figcaption>
+        <p class="build-date">December 11, 2025</p>
+        <p class="build-cap">Breaking ground — the first dirt moves.</p>
+      </figcaption>
+    </figure>
+    <figure class="build-card a" data-d="u">
+      <div class="build-pic">
+        <picture>
+          <source type="image/avif" srcset="/img/opt/build-mar05-corner-480.avif 480w, /img/opt/build-mar05-corner-800.avif 800w, /img/opt/build-mar05-corner-1200.avif 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <source type="image/webp" srcset="/img/opt/build-mar05-corner-480.webp 480w, /img/opt/build-mar05-corner-800.webp 800w, /img/opt/build-mar05-corner-1200.webp 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
           <img src="/img/opt/build-mar05-corner-800.jpg" width="1536" height="2048" alt="The corner of 83rd Avenue and Jefferson Street fenced for construction with the Jefferson House Coming 2026 banner" loading="lazy" decoding="async">
         </picture>
       </div>
@@ -679,8 +698,8 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
     <figure class="build-card a" data-d="u">
       <div class="build-pic">
         <picture>
-          <source type="image/avif" srcset="/img/opt/build-mar12-foundations-480.avif 480w, /img/opt/build-mar12-foundations-800.avif 800w, /img/opt/build-mar12-foundations-1200.avif 1200w" sizes="(max-width:820px) 92vw, 33vw">
-          <source type="image/webp" srcset="/img/opt/build-mar12-foundations-480.webp 480w, /img/opt/build-mar12-foundations-800.webp 800w, /img/opt/build-mar12-foundations-1200.webp 1200w" sizes="(max-width:820px) 92vw, 33vw">
+          <source type="image/avif" srcset="/img/opt/build-mar12-foundations-480.avif 480w, /img/opt/build-mar12-foundations-800.avif 800w, /img/opt/build-mar12-foundations-1200.avif 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <source type="image/webp" srcset="/img/opt/build-mar12-foundations-480.webp 480w, /img/opt/build-mar12-foundations-800.webp 800w, /img/opt/build-mar12-foundations-1200.webp 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
           <img src="/img/opt/build-mar12-foundations-800.jpg" width="3024" height="4032" alt="Poured footings and the first concrete-block walls rising at the Jefferson House site with a crane behind" loading="lazy" decoding="async">
         </picture>
       </div>
@@ -692,17 +711,82 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
     <figure class="build-card a" data-d="u">
       <div class="build-pic">
         <picture>
-          <source type="image/avif" srcset="/img/opt/build-mar12-steel-480.avif 480w, /img/opt/build-mar12-steel-800.avif 800w, /img/opt/build-mar12-steel-1200.avif 1200w" sizes="(max-width:820px) 92vw, 33vw">
-          <source type="image/webp" srcset="/img/opt/build-mar12-steel-480.webp 480w, /img/opt/build-mar12-steel-800.webp 800w, /img/opt/build-mar12-steel-1200.webp 1200w" sizes="(max-width:820px) 92vw, 33vw">
-          <img src="/img/opt/build-mar12-steel-800.jpg" width="3024" height="4032" alt="A telehandler lifting a long steel canopy beam into place over the Jefferson House courtyard" loading="lazy" decoding="async">
+          <source type="image/avif" srcset="/img/opt/build-mar12-steel-480.avif 480w, /img/opt/build-mar12-steel-800.avif 800w, /img/opt/build-mar12-steel-1200.avif 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <source type="image/webp" srcset="/img/opt/build-mar12-steel-480.webp 480w, /img/opt/build-mar12-steel-800.webp 800w, /img/opt/build-mar12-steel-1200.webp 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <img src="/img/opt/build-mar12-steel-800.jpg" width="3024" height="4032" alt="A telehandler setting a long steel beam at the Jefferson House construction site" loading="lazy" decoding="async">
         </picture>
       </div>
       <figcaption>
         <p class="build-date">March 12, 2026</p>
-        <p class="build-cap">Canopy steel swings into place over the courtyard.</p>
+        <p class="build-cap">Steel beams swing into place.</p>
+      </figcaption>
+    </figure>
+    <figure class="build-card a" data-d="u">
+      <div class="build-pic">
+        <picture>
+          <source type="image/avif" srcset="/img/opt/build-2026-03-framing-480.avif 480w, /img/opt/build-2026-03-framing-800.avif 800w, /img/opt/build-2026-03-framing-1200.avif 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <source type="image/webp" srcset="/img/opt/build-2026-03-framing-480.webp 480w, /img/opt/build-2026-03-framing-800.webp 800w, /img/opt/build-2026-03-framing-1200.webp 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <img src="/img/opt/build-2026-03-framing-800.jpg" width="4032" height="3024" alt="Wood framing going up on the Jefferson House buildings around the courtyard lamppost, March 2026" loading="lazy" decoding="async">
+        </picture>
+      </div>
+      <figcaption>
+        <p class="build-date">March 16, 2026</p>
+        <p class="build-cap">Framing takes shape across the lot.</p>
+      </figcaption>
+    </figure>
+    <figure class="build-card a" data-d="u">
+      <div class="build-pic">
+        <picture>
+          <source type="image/avif" srcset="/img/opt/build-2026-04-columns-480.avif 480w, /img/opt/build-2026-04-columns-800.avif 800w, /img/opt/build-2026-04-columns-1200.avif 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <source type="image/webp" srcset="/img/opt/build-2026-04-columns-480.webp 480w, /img/opt/build-2026-04-columns-800.webp 800w, /img/opt/build-2026-04-columns-1200.webp 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <img src="/img/opt/build-2026-04-columns-800.jpg" width="4032" height="3024" alt="Concrete-block walls and standing steel columns across the Jefferson House site, April 2026" loading="lazy" decoding="async">
+        </picture>
+      </div>
+      <figcaption>
+        <p class="build-date">April 3, 2026</p>
+        <p class="build-cap">Block walls up, steel columns standing.</p>
+      </figcaption>
+    </figure>
+    <figure class="build-card a" data-d="u">
+      <div class="build-pic">
+        <picture>
+          <source type="image/avif" srcset="/img/opt/build-2026-04-canopy-480.avif 480w, /img/opt/build-2026-04-canopy-800.avif 800w, /img/opt/build-2026-04-canopy-1200.avif 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <source type="image/webp" srcset="/img/opt/build-2026-04-canopy-480.webp 480w, /img/opt/build-2026-04-canopy-800.webp 800w, /img/opt/build-2026-04-canopy-1200.webp 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <img src="/img/opt/build-2026-04-canopy-800.jpg" width="4032" height="3024" alt="The black-steel gable canopy frame erected at Jefferson House with the Jefferson House banner on the fence, April 2026" loading="lazy" decoding="async">
+        </picture>
+      </div>
+      <figcaption>
+        <p class="build-date">April 8, 2026</p>
+        <p class="build-cap">The black-steel canopy frame goes up.</p>
+      </figcaption>
+    </figure>
+    <figure class="build-card a" data-d="u">
+      <div class="build-pic">
+        <picture>
+          <source type="image/avif" srcset="/img/opt/build-2026-06-containers-480.avif 480w, /img/opt/build-2026-06-containers-800.avif 800w, /img/opt/build-2026-06-containers-1200.avif 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <source type="image/webp" srcset="/img/opt/build-2026-06-containers-480.webp 480w, /img/opt/build-2026-06-containers-800.webp 800w, /img/opt/build-2026-06-containers-1200.webp 1200w" sizes="(max-width:560px) 92vw, (max-width:820px) 46vw, 33vw">
+          <img src="/img/opt/build-2026-06-containers-800.jpg" width="3024" height="4032" alt="Shipping-container shops stacked into place at Jefferson House with the Coming 2026 banner, June 2026" loading="lazy" decoding="async">
+        </picture>
+      </div>
+      <figcaption>
+        <p class="build-date">June 8, 2026</p>
+        <p class="build-cap">Container shops stack into place.</p>
       </figcaption>
     </figure>
   </div>
+  <figure class="build-now a" data-d="u">
+    <div class="build-now-pic">
+      <picture>
+        <source type="image/avif" srcset="/img/opt/build-2026-06-courtyard-800.avif 800w, /img/opt/build-2026-06-courtyard-1200.avif 1200w, /img/opt/build-2026-06-courtyard-1600.avif 1600w, /img/opt/build-2026-06-courtyard-2000.avif 2000w, /img/opt/build-2026-06-courtyard-2400.avif 2400w" sizes="(max-width:1160px) 92vw, 1160px">
+        <source type="image/webp" srcset="/img/opt/build-2026-06-courtyard-800.webp 800w, /img/opt/build-2026-06-courtyard-1200.webp 1200w, /img/opt/build-2026-06-courtyard-1600.webp 1600w, /img/opt/build-2026-06-courtyard-2000.webp 2000w, /img/opt/build-2026-06-courtyard-2400.webp 2400w" sizes="(max-width:1160px) 92vw, 1160px">
+        <img src="/img/opt/build-2026-06-courtyard-1600.jpg" width="10232" height="3936" alt="The covered Jefferson House courtyard under its black-steel canopy with the slab poured and shops around it, June 2026" loading="lazy" decoding="async">
+      </picture>
+    </div>
+    <figcaption>
+      <p class="build-date">June 10, 2026</p>
+      <p class="build-cap">Under the canopy at last — the courtyard takes shape.</p>
+    </figcaption>
+  </figure>
 </section>
 
 <!-- LINEUP TEASER -->
