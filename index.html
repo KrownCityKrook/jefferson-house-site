@@ -84,10 +84,10 @@ button{font-family:inherit;cursor:pointer}
 body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.35;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .5 0 0 0 0 .42 0 0 0 .035 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E")}
 
 /* type system */
-.eyebrow{font-family:'Sansita',sans-serif;font-weight:700;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--copper);display:flex;align-items:center;gap:14px}
-.eyebrow::before{content:'';width:34px;height:2px;background:var(--copper)}
+.eyebrow{font-family:'Sansita',sans-serif;font-weight:700;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--copper-deep);display:flex;align-items:center;gap:14px}
+.eyebrow::before{content:'';width:34px;height:2px;background:var(--copper-deep)}
 .eyebrow--center{justify-content:center}
-.eyebrow--center::after{content:'';width:34px;height:2px;background:var(--copper)}
+.eyebrow--center::after{content:'';width:34px;height:2px;background:var(--copper-deep)}
 .display{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fvs);font-weight:600;line-height:1.04;letter-spacing:-.02em}
 
 /* reveal */
@@ -171,6 +171,11 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 .marquee{background:var(--paper-warm);border-bottom:1px solid var(--line-soft);padding:15px 0;overflow:hidden;position:relative}
 .mq-track{display:flex;width:max-content;animation:marquee 70s linear infinite}
 .marquee:hover .mq-track{animation-play-state:paused}
+/* press */
+.press{background:var(--paper-warm);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);padding:clamp(2rem,4vw,2.75rem) 24px;text-align:center}
+.press-row{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:14px 38px;max-width:940px;margin:18px auto 0;padding:0}
+.press-row a{font-family:'Inter',system-ui,sans-serif;font-weight:600;font-size:clamp(14px,1.85vw,18px);letter-spacing:.02em;color:var(--ink-soft);text-decoration:none;opacity:.72;transition:color .2s ease,opacity .2s ease}
+.press-row a:hover,.press-row a:focus-visible{color:var(--copper-deep);opacity:1}
 .mq-c{flex-shrink:0;display:flex;align-items:center;white-space:nowrap}
 .mq-i{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fvs);font-weight:500;font-size:17px;color:var(--ink);padding:0 8px}
 .mq-d{color:var(--copper);font-size:9px;padding:0 16px}
@@ -181,7 +186,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 .stat-l{max-width:24ch;margin-left:auto;margin-right:auto}
 .stat-n{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fvs);font-weight:600;font-size:clamp(2.6rem,5vw,4.4rem);line-height:1;color:var(--ink)}
 .stat-n sup{font-size:.45em;color:var(--copper);font-style:normal;top:-.7em}
-.stat-l{font-family:'Sansita',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--copper);margin-top:9px}
+.stat-l{font-family:'Sansita',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--copper-deep);margin-top:9px}
 
 /* STORY */
 .story{background:var(--paper);padding:clamp(4rem,9vw,7rem) clamp(1.5rem,5vw,4rem) clamp(2.5rem,5vw,4rem);position:relative;overflow:hidden}
@@ -206,11 +211,11 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 .in-row:first-child{border-top:1px solid var(--line)}
 .in-row:hover{padding-left:18px}
 .in-left{display:flex;align-items:baseline;gap:clamp(14px,2vw,30px)}
-.in-idx{font-family:'Sansita',sans-serif;font-weight:700;font-size:11px;color:var(--copper);letter-spacing:2px}
+.in-idx{font-family:'Sansita',sans-serif;font-weight:700;font-size:11px;color:var(--copper-deep);letter-spacing:2px}
 .in-word{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fvs);font-weight:600;font-size:clamp(3.2rem,8.5vw,7.5rem);line-height:.95;color:var(--ink);transition:color .4s}
 .in-row:hover .in-word{color:var(--copper)}
 .in-right{text-align:right;max-width:340px;flex-shrink:0}
-.in-count{font-family:'Sansita',sans-serif;font-weight:700;font-size:10.5px;color:var(--copper);text-transform:uppercase;letter-spacing:2px;margin-bottom:7px}
+.in-count{font-family:'Sansita',sans-serif;font-weight:700;font-size:10.5px;color:var(--copper-deep);text-transform:uppercase;letter-spacing:2px;margin-bottom:7px}
 .in-desc{font-size:13.5px;color:var(--ink-soft);line-height:1.7}
 
 /* MAP */
@@ -229,7 +234,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 .hs.leased{border-color:#9aa0a6;background:rgba(122,125,128,.32);cursor:default}
 .hs.leased:hover,.hs.leased.lit{background:rgba(122,125,128,.4);box-shadow:none}
 .hs-state{font-family:'Sansita',sans-serif;font-weight:700;font-size:clamp(7px,.95vw,11px);letter-spacing:1px;text-transform:uppercase;color:var(--copper-deep);line-height:1;pointer-events:none;background:rgba(246,241,232,.82);padding:2px 7px;border-radius:100px}
-.hs.pending .hs-state{color:#a06a2c}
+.hs.pending .hs-state{color:#8a5520}
 .hs.leased .hs-state{color:#5d6166}
 .map-chip{position:absolute;transform:translate(-50%,-50%);background:var(--ink);color:var(--cream);font-family:'Sansita',sans-serif;font-weight:700;font-size:clamp(7px,.9vw,10px);letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:100px;pointer-events:none;line-height:1;opacity:.88}
 .map-tip{position:absolute;z-index:5;background:var(--ink);color:var(--cream);border-radius:6px;padding:12px 16px;font-size:13px;line-height:1.5;max-width:240px;pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s;box-shadow:0 14px 40px rgba(14,21,37,.35)}
@@ -239,7 +244,7 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 .map-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 26px;margin-top:26px}
 .lg{display:flex;align-items:center;gap:8px;font-family:'Sansita',sans-serif;font-weight:700;font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--ink-soft)}
 .lg i{width:13px;height:13px;border-radius:3px;display:block}
-.map-note{text-align:center;font-size:12px;color:var(--ink-soft);opacity:.7;margin-top:18px;font-style:italic}
+.map-note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:18px;font-style:italic}
 .map-cta{text-align:center;margin-top:30px}
 
 /* GALLERY — editorial grid, no scroll-jack */
@@ -271,11 +276,11 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 .ls-img{position:relative;height:clamp(200px,23vw,290px);overflow:hidden}
 .ls-img img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease)}
 .ls-card:hover .ls-img img{transform:scale(1.05)}
-.ls-badge{position:absolute;top:14px;right:14px;display:flex;align-items:center;gap:7px;background:rgba(246,241,232,.94);backdrop-filter:blur(10px);color:var(--copper);font-family:'Sansita',sans-serif;font-weight:700;font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;padding:6px 14px;border-radius:100px}
+.ls-badge{position:absolute;top:14px;right:14px;display:flex;align-items:center;gap:7px;background:rgba(246,241,232,.94);backdrop-filter:blur(10px);color:var(--copper-deep);font-family:'Sansita',sans-serif;font-weight:700;font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;padding:6px 14px;border-radius:100px}
 .ls-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--copper);animation:pulseDot 2.2s ease infinite}
 .ls-body{padding:clamp(22px,3vw,32px)}
 .ls-type{font-family:'Sansita',sans-serif;font-weight:700;font-size:10px;letter-spacing:2.2px;text-transform:uppercase;display:block;margin-bottom:7px}
-.ls-type.food{color:var(--copper)}
+.ls-type.food{color:var(--copper-deep)}
 .ls-type.retail{color:var(--sage)}
 .ls-body h3{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fvs);font-weight:600;font-size:clamp(1.4rem,2.3vw,1.8rem);color:var(--ink);margin-bottom:10px}
 .ls-body>p{font-size:13.5px;color:var(--ink-soft);line-height:1.7;margin-bottom:18px}
@@ -511,6 +516,17 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
       </picture>
     </div>
   </div>
+</section>
+
+<!-- PRESS -->
+<section class="press" aria-labelledby="press-h">
+  <p class="eyebrow eyebrow--center a" data-d="u" id="press-h">In the News</p>
+  <ul class="press-row a" data-d="u">
+    <li><a href="https://www.phoenixnewtimes.com/food-drink/developers-break-ground-on-peoria-restaurant-and-community-hub-22708265/" target="_blank" rel="noopener">Phoenix New Times</a></li>
+    <li><a href="https://whatnowphoenix.com/new-food-hall-called-jefferson-house-approved-by-city-council/" target="_blank" rel="noopener">What Now Phoenix</a></li>
+    <li><a href="https://www.yourvalley.net/stories/peoria-council-celebrates-approvals-of-caldwell-bbq-jefferson-house,488487" target="_blank" rel="noopener">The Independent</a></li>
+    <li><a href="https://www.peoriaaz.gov/Home/Components/News/News/6875/439" target="_blank" rel="noopener">City of Peoria</a></li>
+  </ul>
 </section>
 
 <!-- INSIDE -->
