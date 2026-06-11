@@ -61,6 +61,11 @@ app.get('/events/*', (req, res) => res.sendFile(path.join(__dirname, 'events', '
 app.get('/jobs', (req, res) => res.sendFile(path.join(__dirname, 'jobs', 'index.html')));
 app.get('/jobs/*', (req, res) => res.sendFile(path.join(__dirname, 'jobs', 'index.html')));
 
+// Custom 404 — anything the static handler and routes above didn't match
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, '404.html'));
+});
+
 app.listen(PORT, () => {
   console.log(`Jefferson House site running on port ${PORT}`);
 });
