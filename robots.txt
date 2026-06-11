@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /calibrate.html
+Disallow: /apply
+Disallow: /lease-editor/
+Disallow: /api/
+
+Sitemap: https://www.jeffersonhouseaz.com/sitemap.xml
