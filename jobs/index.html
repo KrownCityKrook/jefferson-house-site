@@ -14,6 +14,8 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.jeffersonhouseaz.com/jobs/">
 <meta property="og:image" content="https://www.jeffersonhouseaz.com/img/opt/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" sizes="32x32" href="/img/opt/favicon-32.png">
 <link rel="apple-touch-icon" href="/img/opt/apple-touch-icon.png">
@@ -80,6 +82,7 @@ a{color:var(--copper);text-decoration:none}a:hover{color:var(--copper-light)}
 .form-group .opt{color:var(--slate);font-weight:400}
 .form-input{width:100%;background:rgba(28,39,63,0.5);border:1px solid rgba(184,115,51,0.1);border-radius:6px;color:var(--sand);font-size:14px;padding:12px 14px;font-family:inherit;outline:none;min-height:44px;transition:border-color .2s}
 .form-input:focus{border-color:var(--copper)}
+:focus-visible{outline:2.5px solid var(--copper);outline-offset:2px;border-radius:4px}
 .form-input::placeholder{color:var(--slate)}
 select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%23b87333' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 select.form-input option{background:var(--navy);color:var(--sand)}
@@ -154,12 +157,12 @@ textarea.form-input{min-height:100px;resize:vertical}
     <div class="card">
       <div class="card-title">About You</div>
       <div class="form-row">
-        <div class="form-group"><label>First Name</label><input class="form-input" id="firstName" placeholder="First"></div>
-        <div class="form-group"><label>Last Name</label><input class="form-input" id="lastName" placeholder="Last"></div>
+        <div class="form-group"><label for="firstName">First Name</label><input class="form-input" id="firstName" placeholder="First"></div>
+        <div class="form-group"><label for="lastName">Last Name</label><input class="form-input" id="lastName" placeholder="Last"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Email</label><input class="form-input" id="email" type="email" placeholder="you@example.com"></div>
-        <div class="form-group"><label>Phone</label><input class="form-input" id="phone" type="tel" placeholder="(555) 555-5555"></div>
+        <div class="form-group"><label for="email">Email</label><input class="form-input" id="email" type="email" placeholder="you@example.com"></div>
+        <div class="form-group"><label for="phone">Phone</label><input class="form-input" id="phone" type="tel" placeholder="(555) 555-5555"></div>
       </div>
     </div>
 
@@ -168,17 +171,17 @@ textarea.form-input{min-height:100px;resize:vertical}
       <div class="form-group">
         <label>Position You're Applying For</label>
         <div class="role-grid" id="roleGrid">
-          <button type="button" class="role-card" data-role="Management"><div class="role-card-title">Management</div><div class="role-card-desc">Lead service, run shifts, own the floor.</div></button>
-          <button type="button" class="role-card" data-role="Bar"><div class="role-card-title">Bar</div><div class="role-card-desc">Pour craft cocktails, beer, wine. Title 4 needed.</div></button>
-          <button type="button" class="role-card" data-role="Floor Staff"><div class="role-card-title">Floor Staff</div><div class="role-card-desc">Hosts, servers, runners. Front of house.</div></button>
-          <button type="button" class="role-card" data-role="Security"><div class="role-card-title">Security</div><div class="role-card-desc">Door staff. Verify IDs, manage capacity.</div></button>
-          <button type="button" class="role-card" data-role="Other"><div class="role-card-title">Other</div><div class="role-card-desc">Something else? Tell us in the notes.</div></button>
+          <button type="button" class="role-card" aria-pressed="false" data-role="Management"><div class="role-card-title">Management</div><div class="role-card-desc">Lead service, run shifts, own the floor.</div></button>
+          <button type="button" class="role-card" aria-pressed="false" data-role="Bar"><div class="role-card-title">Bar</div><div class="role-card-desc">Pour craft cocktails, beer, wine. Title 4 needed.</div></button>
+          <button type="button" class="role-card" aria-pressed="false" data-role="Floor Staff"><div class="role-card-title">Floor Staff</div><div class="role-card-desc">Hosts, servers, runners. Front of house.</div></button>
+          <button type="button" class="role-card" aria-pressed="false" data-role="Security"><div class="role-card-title">Security</div><div class="role-card-desc">Door staff. Verify IDs, manage capacity.</div></button>
+          <button type="button" class="role-card" aria-pressed="false" data-role="Other"><div class="role-card-title">Other</div><div class="role-card-desc">Something else? Tell us in the notes.</div></button>
         </div>
         <input type="hidden" id="position">
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Years in Hospitality <span class="opt">(optional)</span></label><input class="form-input" id="yearsExperience" type="number" min="0" max="60" placeholder="e.g. 4"></div>
-        <div class="form-group"><label>Earliest Start Date <span class="opt">(optional)</span></label><input class="form-input" id="earliestStart" type="date"></div>
+        <div class="form-group"><label for="yearsExperience">Years in Hospitality <span class="opt">(optional)</span></label><input class="form-input" id="yearsExperience" type="number" min="0" max="60" placeholder="e.g. 4"></div>
+        <div class="form-group"><label for="earliestStart">Earliest Start Date <span class="opt">(optional)</span></label><input class="form-input" id="earliestStart" type="date"></div>
       </div>
       <div class="form-group">
         <label>Title 4 / TIPS Certification <span class="opt">(if applicable)</span></label>
@@ -189,15 +192,15 @@ textarea.form-input{min-height:100px;resize:vertical}
         </div>
       </div>
       <div class="form-group">
-        <label>Availability <span class="opt">(optional)</span></label>
+        <label for="availability">Availability <span class="opt">(optional)</span></label>
         <input class="form-input" id="availability" placeholder="e.g. Weekdays, Evenings, Weekends, Full-time, Part-time">
       </div>
       <div class="form-group">
-        <label>Relevant Experience <span class="opt">(optional)</span></label>
+        <label for="experience">Relevant Experience <span class="opt">(optional)</span></label>
         <textarea class="form-input" id="experience" placeholder="Tell us a little about your background. Where have you worked? What did you do?"></textarea>
       </div>
       <div class="form-group">
-        <label>Anything Else? <span class="opt">(optional)</span></label>
+        <label for="notes">Anything Else? <span class="opt">(optional)</span></label>
         <textarea class="form-input" id="notes" placeholder="Anything you'd like us to know."></textarea>
       </div>
     </div>
@@ -263,8 +266,9 @@ var roleCards = document.querySelectorAll('.role-card');
 var positionInput = document.getElementById('position');
 roleCards.forEach(function(card) {
   card.addEventListener('click', function() {
-    roleCards.forEach(function(c) { c.classList.remove('selected'); });
+    roleCards.forEach(function(c) { c.classList.remove('selected'); c.setAttribute('aria-pressed', 'false'); });
     card.classList.add('selected');
+    card.setAttribute('aria-pressed', 'true');
     positionInput.value = card.getAttribute('data-role');
   });
 });

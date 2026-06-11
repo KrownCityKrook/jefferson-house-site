@@ -361,9 +361,11 @@
     .panel-status,
     .panel-cta,
     .guide-title { font-family: 'Sansita', sans-serif; font-weight: 700; }
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   </style>
 </head>
 <body>
+  <h1 class="sr-only">Jefferson House — 3D Virtual Tour of the Old Town Peoria Courtyard</h1>
 
   <!-- Loading Screen -->
   <div id="loading">
@@ -395,9 +397,9 @@
 
   <!-- Tour Controls -->
   <div id="tour-controls">
-    <button class="tour-arrow" id="prev-stop">&#8249;</button>
+    <button class="tour-arrow" id="prev-stop" aria-label="Previous stop">&#8249;</button>
     <div class="tour-dots" id="tour-dots"></div>
-    <button class="tour-arrow" id="next-stop">&#8250;</button>
+    <button class="tour-arrow" id="next-stop" aria-label="Next stop">&#8250;</button>
   </div>
 
   <!-- Hotspot Layer (Explore Mode) -->
@@ -405,7 +407,7 @@
 
   <!-- Info Panel -->
   <div id="info-panel">
-    <button class="panel-close" id="panel-close">&times;</button>
+    <button class="panel-close" id="panel-close" aria-label="Close panel">&times;</button>
     <div class="panel-type" id="panel-type"></div>
     <div class="panel-title" id="panel-title"></div>
     <div class="panel-status" id="panel-status"></div>

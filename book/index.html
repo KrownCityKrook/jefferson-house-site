@@ -13,6 +13,8 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.jeffersonhouseaz.com/book/">
 <meta property="og:image" content="https://www.jeffersonhouseaz.com/img/opt/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" sizes="32x32" href="/img/opt/favicon-32.png">
 <link rel="apple-touch-icon" href="/img/opt/apple-touch-icon.png">
@@ -177,6 +179,7 @@ a:hover { color: var(--copper-light); }
   font-family: inherit; outline: none; min-height: 44px; transition: border-color 0.2s;
 }
 .form-input:focus { border-color: var(--copper); }
+:focus-visible{outline:2.5px solid var(--copper);outline-offset:2px;border-radius:4px}
 .form-input::placeholder { color: var(--slate); }
 textarea.form-input { min-height: 80px; resize: vertical; }
 select.form-input { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%23b87333' stroke-width='1.5'><path d='M1 1l5 5 5-5'/></svg>"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
@@ -287,23 +290,23 @@ select.form-input option { background: #1c273f; color: #e0d6ca; }
       <div class="summary-bar" id="formSummary"></div>
       <div class="card-title">Your Info</div>
       <div class="form-group">
-        <label>Name</label>
+        <label for="bookName">Name</label>
         <input class="form-input" id="bookName" placeholder="Your full name" required>
       </div>
       <div class="form-group">
-        <label>Email</label>
+        <label for="bookEmail">Email</label>
         <input class="form-input" id="bookEmail" type="email" placeholder="you@example.com" required>
       </div>
       <div class="form-group">
-        <label>Phone <span style="color:var(--slate);font-weight:400">(optional)</span></label>
+        <label for="bookPhone">Phone <span style="color:var(--slate);font-weight:400">(optional)</span></label>
         <input class="form-input" id="bookPhone" type="tel" placeholder="(555) 555-5555">
       </div>
       <div class="form-group">
-        <label>Business name <span style="color:var(--slate);font-weight:400">(if you have one)</span></label>
+        <label for="bookBusinessName">Business name <span style="color:var(--slate);font-weight:400">(if you have one)</span></label>
         <input class="form-input" id="bookBusinessName" placeholder="Your business or working name">
       </div>
       <div class="form-group">
-        <label>Concept</label>
+        <label for="bookBusinessType">Concept</label>
         <select class="form-input" id="bookBusinessType">
           <option value="">Pick one…</option>
           <option value="Food &amp; Drink">Food &amp; Drink</option>
@@ -314,7 +317,7 @@ select.form-input option { background: #1c273f; color: #e0d6ca; }
         </select>
       </div>
       <div class="form-group">
-        <label>Have you operated a business before?</label>
+        <label for="bookPriorExperience">Have you operated a business before?</label>
         <select class="form-input" id="bookPriorExperience">
           <option value="">Pick one…</option>
           <option value="Yes — currently operating">Yes — currently operating</option>
@@ -323,7 +326,7 @@ select.form-input option { background: #1c273f; color: #e0d6ca; }
         </select>
       </div>
       <div class="form-group">
-        <label>Target opening timeline</label>
+        <label for="bookTargetTimeline">Target opening timeline</label>
         <select class="form-input" id="bookTargetTimeline">
           <option value="">Pick one…</option>
           <option value="Less than 3 months">Less than 3 months</option>
@@ -334,7 +337,7 @@ select.form-input option { background: #1c273f; color: #e0d6ca; }
         </select>
       </div>
       <div class="form-group">
-        <label>Anything else? <span style="color:var(--slate);font-weight:400">(optional)</span></label>
+        <label for="bookNotes">Anything else? <span style="color:var(--slate);font-weight:400">(optional)</span></label>
         <textarea class="form-input" id="bookNotes" placeholder="Tell us anything that'd help us prep for the call."></textarea>
       </div>
       <!-- Honeypot — hidden from real users; bots crawling the form will fill it. -->
