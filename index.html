@@ -219,13 +219,18 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 .mapsec-head p{font-size:15px;color:var(--ink-soft);line-height:1.75}
 .map-wrap{max-width:980px;margin:0 auto;position:relative}
 .map-frame{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:clamp(18px,3.5vw,44px);box-shadow:0 18px 56px rgba(24,36,60,.1)}
-.map-svg{width:100%;height:auto;display:block}
-.map-svg .zone{cursor:pointer;transition:opacity .25s}
-.map-svg .zone rect,.map-svg .zone circle{transition:fill .25s,stroke .25s,stroke-width .25s}
-.map-svg .zone:hover rect,.map-svg .zone:focus rect,.map-svg .zone.lit rect,
-.map-svg .zone:hover circle,.map-svg .zone:focus circle,.map-svg .zone.lit circle{stroke-width:2.5}
-.map-svg .zone:focus{outline:none}
-.map-svg text{font-family:'Sansita',sans-serif;font-weight:700;pointer-events:none;user-select:none}
+.map-stage{position:relative;line-height:0}
+.map-stage>picture img{width:100%;height:auto;display:block;border-radius:6px}
+.hs{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid var(--copper);background:rgba(184,115,51,.14);border-radius:5px;cursor:pointer;transition:background .25s,box-shadow .25s,border-color .25s;text-decoration:none}
+.hs:hover,.hs:focus-visible,.hs.lit{background:rgba(184,115,51,.3);box-shadow:0 0 14px rgba(184,115,51,.45)}
+.hs.pending{border-style:dashed;border-color:#D4955A;background:rgba(212,149,90,.24)}
+.hs.pending:hover,.hs.pending.lit{background:rgba(212,149,90,.4);box-shadow:0 0 14px rgba(212,149,90,.4)}
+.hs.leased{border-color:#9aa0a6;background:rgba(122,125,128,.32);cursor:default}
+.hs.leased:hover,.hs.leased.lit{background:rgba(122,125,128,.4);box-shadow:none}
+.hs-state{font-family:'Sansita',sans-serif;font-weight:700;font-size:clamp(7px,.95vw,11px);letter-spacing:1px;text-transform:uppercase;color:var(--copper-deep);line-height:1;pointer-events:none;background:rgba(246,241,232,.82);padding:2px 7px;border-radius:100px}
+.hs.pending .hs-state{color:#a06a2c}
+.hs.leased .hs-state{color:#5d6166}
+.map-chip{position:absolute;transform:translate(-50%,-50%);background:var(--ink);color:var(--cream);font-family:'Sansita',sans-serif;font-weight:700;font-size:clamp(7px,.9vw,10px);letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:100px;pointer-events:none;line-height:1;opacity:.88}
 .map-tip{position:absolute;z-index:5;background:var(--ink);color:var(--cream);border-radius:6px;padding:12px 16px;font-size:13px;line-height:1.5;max-width:240px;pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s;box-shadow:0 14px 40px rgba(14,21,37,.35)}
 .map-tip.on{opacity:1;transform:translateY(0)}
 .map-tip b{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fvs);font-weight:600;font-size:15px;display:block;margin-bottom:3px}
@@ -550,54 +555,29 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
   <div class="mapsec-head">
     <p class="eyebrow eyebrow--center a" data-d="u">The Lay of the Land</p>
     <h2 id="map-h" class="display a" data-d="u">Find your spot.</h2>
-    <p class="a" data-d="u">One city block at Jefferson &amp; 83rd. Tap around the plan — kitchens, shops, the bar, the stage, the splash pad. Three kitchen suites and six retail spots are leasing now.</p>
+    <p class="a" data-d="u">One city block at Jefferson &amp; 83rd, straight from the architect's plan. Suite availability is live from our leasing desk — copper means open, dashed means a lease is pending, gray means it's gone.</p>
   </div>
   <div class="map-wrap a" data-d="u">
     <div class="map-frame">
-      <svg class="map-svg" viewBox="0 0 750 700" role="group" aria-label="Interactive site plan of Jefferson House">
-        <!-- streets -->
-        <text x="375" y="14" text-anchor="middle" font-size="9" letter-spacing="3" fill="#9b9484">ALLEY</text>
-        <text x="375" y="692" text-anchor="middle" font-size="13" letter-spacing="4" fill="#435070">W JEFFERSON ST</text>
-        <text x="740" y="350" text-anchor="middle" font-size="13" letter-spacing="4" fill="#435070" transform="rotate(90 740 350)">83RD AVE</text>
-        <!-- courtyard field -->
-        <rect x="35" y="22" width="675" height="640" rx="10" fill="#EDE2CC"/>
-        <text x="395" y="330" text-anchor="middle" font-size="12" letter-spacing="3.5" fill="#9b8d72">OPEN-AIR COURTYARD</text>
-        <text x="395" y="349" text-anchor="middle" font-size="10" letter-spacing="2" fill="#b3a78d">SEATS 300+ · UNDER THE CANOPY</text>
-        <!-- north row: service yard, restrooms (D), the bar (C) + shop -->
-        <g class="zone" data-t="Service Yard" data-s="Back of house" tabindex="0" aria-label="Service yard"><rect x="42" y="28" width="86" height="58" rx="4" fill="#DDD6C6" stroke="#b8ae99" stroke-width="1.5"/><text x="85" y="62" text-anchor="middle" font-size="8" letter-spacing="1" fill="#7a715d">SERVICE</text></g>
-        <g class="zone" data-t="Restrooms" data-s="Building D" tabindex="0" aria-label="Restrooms, building D"><rect x="140" y="28" width="170" height="88" rx="4" fill="#DDD6C6" stroke="#b8ae99" stroke-width="1.5"/><text x="225" y="78" text-anchor="middle" font-size="9.5" letter-spacing="1.5" fill="#7a715d">RESTROOMS</text></g>
-        <g class="zone" data-t="The Bar" data-s="One bar · drink rails on the courtyard · Building C" tabindex="0" aria-label="The bar, building C"><rect x="330" y="28" width="230" height="88" rx="4" fill="rgba(217,154,62,.38)" stroke="#B8862F" stroke-width="1.5"/><text x="445" y="78" text-anchor="middle" font-size="11" letter-spacing="2.5" fill="#8a6010">THE BAR</text></g>
-        <g class="zone" data-t="Retail &amp; Eatery Spot" data-s="Leasing now · Building C east" tabindex="0" aria-label="Retail and eatery spot, leasing now"><rect x="568" y="28" width="92" height="88" rx="4" fill="rgba(107,127,94,.22)" stroke="#6B7F5E" stroke-width="1.5"/><text x="614" y="78" text-anchor="middle" font-size="9.5" letter-spacing="1.5" fill="#4e5e44">SHOP</text></g>
-        <!-- west: offices (E) + stage + splash pad -->
-        <g class="zone" data-t="Offices" data-s="Building E · back of house" tabindex="0" aria-label="Offices, building E"><rect x="42" y="210" width="80" height="180" rx="4" fill="#DDD6C6" stroke="#b8ae99" stroke-width="1.5"/><text x="82" y="305" text-anchor="middle" font-size="8.5" letter-spacing="1.5" fill="#7a715d" transform="rotate(-90 82 305)">OFFICE</text></g>
-        <g class="zone" data-t="The Stage" data-s="West side · faces the courtyard · stage-bench seating" tabindex="0" aria-label="Live music stage"><rect x="132" y="228" width="52" height="144" rx="4" fill="rgba(24,36,60,.85)" stroke="#18243C" stroke-width="1.5"/><text x="158" y="300" text-anchor="middle" font-size="9" letter-spacing="2" fill="#E0D6CA" transform="rotate(-90 158 300)">STAGE</text></g>
-        <g class="zone" data-t="The Splash Pad" data-s="Bubbler pad · for the kids" tabindex="0" aria-label="Bubbler splash pad"><circle cx="258" cy="250" r="40" fill="rgba(127,168,201,.4)" stroke="#5F8CB0" stroke-width="1.5"/><text x="258" y="254" text-anchor="middle" font-size="8.5" letter-spacing="1" fill="#3d6485">SPLASH</text></g>
-        <!-- east: container shops flanking the main entry -->
-        <g class="zone" data-t="Container Shop B1" data-s="Retail &amp; eatery · leasing now" tabindex="0" aria-label="Container shop B1, leasing now"><rect x="556" y="180" width="124" height="52" rx="4" fill="rgba(107,127,94,.22)" stroke="#6B7F5E" stroke-width="1.5"/><text x="618" y="211" text-anchor="middle" font-size="9.5" letter-spacing="1.5" fill="#4e5e44">SHOP</text></g>
-        <g class="zone" data-t="Container Shop B2" data-s="Retail &amp; eatery · leasing now" tabindex="0" aria-label="Container shop B2, leasing now"><rect x="556" y="238" width="124" height="52" rx="4" fill="rgba(107,127,94,.22)" stroke="#6B7F5E" stroke-width="1.5"/><text x="618" y="269" text-anchor="middle" font-size="9.5" letter-spacing="1.5" fill="#4e5e44">SHOP</text></g>
-        <text x="640" y="338" text-anchor="middle" font-size="8.5" letter-spacing="2" fill="#9b8d72">MAIN ENTRY</text>
-        <text x="640" y="352" text-anchor="middle" font-size="10" fill="#9b8d72">&#8596;</text>
-        <g class="zone" data-t="Container Shop B3" data-s="Retail &amp; eatery · leasing now" tabindex="0" aria-label="Container shop B3, leasing now"><rect x="556" y="382" width="124" height="52" rx="4" fill="rgba(107,127,94,.22)" stroke="#6B7F5E" stroke-width="1.5"/><text x="618" y="413" text-anchor="middle" font-size="9.5" letter-spacing="1.5" fill="#4e5e44">SHOP</text></g>
-        <g class="zone" data-t="Container Shop B4" data-s="Retail &amp; eatery · leasing now" tabindex="0" aria-label="Container shop B4, leasing now"><rect x="556" y="440" width="124" height="52" rx="4" fill="rgba(107,127,94,.22)" stroke="#6B7F5E" stroke-width="1.5"/><text x="618" y="471" text-anchor="middle" font-size="9.5" letter-spacing="1.5" fill="#4e5e44">SHOP</text></g>
-        <!-- south row: kitchens + shop + SE corner kitchen -->
-        <g class="zone" data-t="Kitchen Suite A3" data-s="640 SF turnkey · leasing now" tabindex="0" aria-label="Kitchen suite A3, leasing now"><rect x="100" y="468" width="180" height="64" rx="4" fill="rgba(184,115,51,.25)" stroke="#B87333" stroke-width="1.5"/><text x="190" y="505" text-anchor="middle" font-size="9.5" letter-spacing="2" fill="#94591F">KITCHEN</text></g>
-        <g class="zone" data-t="Kitchen Suite A2" data-s="640 SF turnkey · leasing now" tabindex="0" aria-label="Kitchen suite A2, leasing now"><rect x="295" y="468" width="180" height="64" rx="4" fill="rgba(184,115,51,.25)" stroke="#B87333" stroke-width="1.5"/><text x="385" y="505" text-anchor="middle" font-size="9.5" letter-spacing="2" fill="#94591F">KITCHEN</text></g>
-        <g class="zone" data-t="Retail &amp; Eatery Spot" data-s="Leasing now" tabindex="0" aria-label="Retail and eatery spot, leasing now"><rect x="488" y="468" width="56" height="64" rx="4" fill="rgba(107,127,94,.22)" stroke="#6B7F5E" stroke-width="1.5"/><text x="516" y="505" text-anchor="middle" font-size="8.5" letter-spacing="1" fill="#4e5e44">SHOP</text></g>
-        <g class="zone" data-t="Kitchen Suite A1" data-s="640 SF turnkey · southeast corner" tabindex="0" aria-label="Kitchen suite A1"><rect x="588" y="510" width="86" height="148" rx="4" fill="rgba(184,115,51,.25)" stroke="#B87333" stroke-width="1.5"/><text x="631" y="584" text-anchor="middle" font-size="9" letter-spacing="2" fill="#94591F" transform="rotate(-90 631 584)">KITCHEN</text></g>
-        <!-- patio dining along Jefferson -->
-        <g class="zone" data-t="The Patio" data-s="Dining along Jefferson · event add-ons available" tabindex="0" aria-label="Patio dining along Jefferson Street"><rect x="100" y="556" width="444" height="74" rx="4" fill="rgba(203,181,142,.4)" stroke="#A98F62" stroke-width="1.5" stroke-dasharray="5 4"/><text x="322" y="598" text-anchor="middle" font-size="9.5" letter-spacing="2" fill="#79633c">PATIO DINING</text></g>
-      </svg>
+      <div class="map-stage" id="mapstage" role="group" aria-label="Interactive leasing plan of Jefferson House — Jefferson Street runs along the bottom, 83rd Avenue along the right">
+        <picture>
+          <source type="image/avif" srcset="/img/opt/site-layout-600.avif 600w, /img/opt/site-layout-900.avif 900w, /img/opt/site-layout-1400.avif 1400w" sizes="(max-width:1040px) 94vw, 900px">
+          <source type="image/webp" srcset="/img/opt/site-layout-600.webp 600w, /img/opt/site-layout-900.webp 900w, /img/opt/site-layout-1400.webp 1400w" sizes="(max-width:1040px) 94vw, 900px">
+          <img src="/img/opt/site-layout-900.jpg" width="1400" height="1359" alt="Jefferson House architectural site plan — kitchens along Jefferson Street, container shops at the 83rd Avenue entry, bar building on the north side, courtyard in the middle" loading="lazy" decoding="async">
+        </picture>
+        <span class="map-chip" style="left:62%;top:19%">The Bar</span>
+        <span class="map-chip" style="left:21%;top:52%">Stage</span>
+        <span class="map-chip" style="left:28.5%;top:46%">Splash Pad</span>
+        <div id="maphs"></div>
+      </div>
       <div class="map-tip" id="maptip" role="status" aria-live="polite"></div>
     </div>
     <div class="map-legend" aria-hidden="true">
-      <span class="lg"><i style="background:rgba(184,115,51,.45)"></i>Kitchens</span>
-      <span class="lg"><i style="background:rgba(107,127,94,.45)"></i>Shops</span>
-      <span class="lg"><i style="background:rgba(217,154,62,.55)"></i>Bar</span>
-      <span class="lg"><i style="background:#18243C"></i>Stage</span>
-      <span class="lg"><i style="background:rgba(127,168,201,.6)"></i>Splash Pad</span>
-      <span class="lg"><i style="background:rgba(203,181,142,.6)"></i>Patio</span>
+      <span class="lg"><i style="background:rgba(184,115,51,.25);border:2px solid #B87333;border-radius:3px"></i>Available</span>
+      <span class="lg"><i style="background:rgba(212,149,90,.3);border:2px dashed #D4955A;border-radius:3px"></i>Lease Pending</span>
+      <span class="lg"><i style="background:rgba(122,125,128,.35);border:2px solid #9aa0a6;border-radius:3px"></i>Leased</span>
     </div>
-    <p class="map-note">Plan is illustrative — not to scale. Final layouts may shift as construction progresses.</p>
+    <p class="map-note">Live availability. Tap an open suite to start an application — final layouts may shift as construction progresses.</p>
     <div class="map-cta"><a href="/apply" class="btn btn-ink">Claim a Suite</a></div>
   </div>
 </section>
@@ -893,7 +873,19 @@ window.addEventListener('scroll',function(){
 
 var gslides=document.querySelectorAll('.gallery-slide');
 
-/* map tooltips */
+/* leasing map — live availability from the hub (same coords as the lease editor) */
+var SUITES=[
+  {id:'A1',code:'A1',name:'Kitchen A1',desc:'640 SF turnkey kitchen suite',x:81,y:74.4,w:11.9,h:23.8},
+  {id:'A2',code:'A2',name:'Kitchen A2',desc:'640 SF turnkey kitchen suite',x:40.1,y:74.2,w:24.9,h:11.2},
+  {id:'A3',code:'A3',name:'Kitchen A3',desc:'640 SF turnkey kitchen suite',x:9.6,y:74.6,w:25.2,h:9.8},
+  {id:'B1',code:'B1',name:'Shop B1',desc:'Container shop · retail & eatery',x:81.4,y:35.6,w:13.8,h:5.6},
+  {id:'B2',code:'B2',name:'Shop B2',desc:'Container shop · retail & eatery',x:81.6,y:41.6,w:13.2,h:5},
+  {id:'B3',code:'B3',name:'Shop B3',desc:'Container shop · retail & eatery',x:81.4,y:54.8,w:14,h:5.6},
+  {id:'B4',code:'B4',name:'Shop B4',desc:'Container shop · retail & eatery',x:82,y:60.6,w:13,h:5},
+  {id:'R440',code:'440',name:'Retail 440',desc:'440 SF shop · north side',x:78.7,y:14.6,w:13.9,h:13},
+  {id:'R192',code:'192',name:'Retail 192',desc:'192 SF shop · on the patio',x:65.6,y:74.4,w:7.7,h:10.8}
+];
+var STATE_TXT={available:'Available — tap to apply',pending:'Lease pending',leased:'Leased'};
 var tip=document.getElementById('maptip'),wrap=document.querySelector('.map-frame'),lit=null;
 function showTip(z,x,y){
   tip.innerHTML='<b>'+z.getAttribute('data-t')+'</b><small>'+z.getAttribute('data-s')+'</small>';
@@ -904,19 +896,41 @@ function showTip(z,x,y){
   tip.classList.add('on');
 }
 function hideTip(){tip.classList.remove('on');if(lit){lit.classList.remove('lit');lit=null}}
-document.querySelectorAll('.map-svg .zone').forEach(function(z){
+function bindTip(z){
   z.addEventListener('mousemove',function(e){showTip(z,e.clientX,e.clientY)});
   z.addEventListener('mouseleave',hideTip);
   z.addEventListener('focus',function(){var r=z.getBoundingClientRect();showTip(z,r.left+r.width/2,r.top)});
   z.addEventListener('blur',hideTip);
   z.addEventListener('click',function(e){
+    if(z.tagName==='A')return;
     if(lit===z){hideTip();return}
     if(lit)lit.classList.remove('lit');
     lit=z;z.classList.add('lit');
     showTip(z,e.clientX||z.getBoundingClientRect().left+40,e.clientY||z.getBoundingClientRect().top);
   });
-});
-document.addEventListener('click',function(e){if(!e.target.closest('.zone'))hideTip()});
+}
+function renderMap(states){
+  var host=document.getElementById('maphs');
+  if(!host)return;
+  host.innerHTML='';
+  SUITES.forEach(function(s){
+    var st=states[s.id]||'available';
+    var el=document.createElement(st==='available'?'a':'div');
+    el.className='hs'+(st==='available'?'':' '+st);
+    el.style.cssText='left:'+s.x+'%;top:'+s.y+'%;width:'+s.w+'%;height:'+s.h+'%';
+    el.setAttribute('data-t',s.name);
+    el.setAttribute('data-s',s.desc+' · '+STATE_TXT[st]);
+    el.setAttribute('aria-label',s.name+', '+STATE_TXT[st]);
+    if(st==='available'){el.href='/apply';}
+    else{el.setAttribute('tabindex','0');}
+    if(st!=='available'){var sl=document.createElement('span');sl.className='hs-state';sl.textContent=st==='pending'?'Pending':'Leased';el.appendChild(sl);}
+    bindTip(el);
+    host.appendChild(el);
+  });
+}
+renderMap({});
+fetch('/api/lease-editor/suite-availability').then(function(r){return r.ok?r.json():{}}).then(renderMap).catch(function(){});
+document.addEventListener('click',function(e){if(!e.target.closest('.hs'))hideTip()});
 
 /* lightbox */
 var lb=document.getElementById('lb'),lbi=document.getElementById('lbi'),lbc=document.getElementById('lbc'),lbn=document.getElementById('lbn'),ci=0,gd=[];
