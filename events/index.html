@@ -19,7 +19,20 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" sizes="32x32" href="/img/opt/favicon-32.png">
 <link rel="apple-touch-icon" href="/img/opt/apple-touch-icon.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Jefferson House","item":"https://www.jeffersonhouseaz.com/"},{"@type":"ListItem","position":2,"name":"Plan an Event","item":"https://www.jeffersonhouseaz.com/events/"}]}</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Jefferson House","item":"https://www.jeffersonhouseaz.com/"},{"@type":"ListItem","position":2,"name":"Plan an Event","item":"https://www.jeffersonhouseaz.com/events/"}]},
+{"@type":["EventVenue","LocalBusiness"],"@id":"https://www.jeffersonhouseaz.com/#venue","name":"Jefferson House","url":"https://www.jeffersonhouseaz.com/events/","description":"Open-air event venue in Downtown Peoria's Arts District — a covered courtyard seating 300+, a live music stage, a bar, three on-site kitchens, and a private patio on Jefferson Street. Booking private events and live music for late 2026 and 2027.","image":["https://www.jeffersonhouseaz.com/img/opt/gallery-interior-courtyard-1600.jpg"],"address":{"@type":"PostalAddress","streetAddress":"8310 W. Jefferson Street","addressLocality":"Peoria","addressRegion":"AZ","postalCode":"85345","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":33.5795,"longitude":-112.2378},"maximumAttendeeCapacity":300,"containedInPlace":{"@type":"Place","name":"Downtown Peoria","alternateName":["Old Town Peoria","Peoria Arts District"]},"amenityFeature":[{"@type":"LocationFeatureSpecification","name":"Covered open-air courtyard","value":true},{"@type":"LocationFeatureSpecification","name":"Live music stage","value":true},{"@type":"LocationFeatureSpecification","name":"On-site kitchens","value":true},{"@type":"LocationFeatureSpecification","name":"Private event patio","value":true},{"@type":"LocationFeatureSpecification","name":"Heaters, fans and misters","value":true},{"@type":"LocationFeatureSpecification","name":"Free street and surface-lot parking","value":true}],"makesOffer":[{"@type":"Offer","name":"Private event buyout","description":"Full-property or courtyard-only private events for up to 300+ guests."},{"@type":"Offer","name":"Wedding ceremonies and receptions","description":"Ceremony and reception in the covered courtyard, with the stage for a band or DJ."},{"@type":"Offer","name":"Corporate and company events","description":"Holiday parties, team nights, client receptions and offsites."},{"@type":"Offer","name":"Live music bookings","description":"Showcases, album releases and touring nights on the courtyard stage."},{"@type":"Offer","name":"Markets and pop-ups","description":"Daytime artisan markets and maker days in the Arts District courtyard."}]},
+{"@type":"FAQPage","@id":"https://www.jeffersonhouseaz.com/events/#faq","mainEntity":[
+{"@type":"Question","name":"How many people fit?","acceptedAnswer":{"@type":"Answer","text":"The courtyard seats 300+ and holds more standing. The Jefferson Street patio works for smaller groups and can be held privately on its own. We'll size it with you once we know the shape of the event."}},
+{"@type":"Question","name":"Can we get married here?","acceptedAnswer":{"@type":"Answer","text":"Yes. The courtyard works for a ceremony and a reception in the same place, and the stage handles the band or the DJ. We're a new venue rather than a wedding factory, so expect a conversation rather than a tier sheet."}},
+{"@type":"Question","name":"Do we have to use your kitchens?","acceptedAnswer":{"@type":"Answer","text":"No, but three of them are right here and run by the people who own them, so it's usually the easier and better answer. Tell us what you're imagining and we'll talk it through."}},
+{"@type":"Question","name":"Is it indoors or outdoors?","acceptedAnswer":{"@type":"Answer","text":"Open-air, under a covered black-steel canopy, with heaters, fans and misters. It's built for Arizona weather in both directions — you're outside, but you're not exposed."}},
+{"@type":"Question","name":"Can we book a daytime event?","acceptedAnswer":{"@type":"Answer","text":"Absolutely, and we'd like more of them. Mornings and afternoons in the courtyard are bright and open, which suits markets, showers, brunches and family gatherings."}},
+{"@type":"Question","name":"What about parking?","acceptedAnswer":{"@type":"Answer","text":"Public surface lots and on-street parking surround the venue throughout Downtown Peoria. Guests park once and walk — no venue lot to manage, no valet required."}},
+{"@type":"Question","name":"How far out are you booking?","acceptedAnswer":{"@type":"Answer","text":"We open in November 2026 and are taking inquiries for late 2026 and 2027. Booking early means more input on how your event gets set up."}}
+]}]}
+</script>
 <style>
 :root {
   --navy:#18243C;--navy-light:#2a3a58;--navy-dark:#0E1525;
@@ -96,6 +109,34 @@ textarea.form-input{min-height:100px;resize:vertical}
   .card{padding:20px 16px}
   .hero{padding:36px 20px 24px}
 }
+
+/* ---- editorial sections around the inquiry form ---- */
+.prose{max-width:640px;margin:0 auto;padding:0 20px}
+.prose section{padding-bottom:clamp(32px,5vw,44px)}
+.prose h2{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fraunces-vs);font-size:clamp(20px,3.2vw,26px);font-weight:700;color:var(--sand);line-height:1.25;margin-bottom:14px}
+.prose h3{font-family:'Sansita',sans-serif;font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--copper);margin-bottom:12px}
+.prose p{font-size:14.5px;color:var(--sand-dark);line-height:1.8;margin-bottom:14px;max-width:60ch}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--cream);font-weight:600}
+
+.speclist{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:rgba(184,115,51,0.12);border:1px solid rgba(184,115,51,0.12);border-radius:8px;overflow:hidden;margin:20px 0}
+.speclist div{background:var(--navy-dark);padding:16px 18px}
+.speclist dt{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fraunces-vs);font-size:20px;font-weight:700;color:var(--copper);line-height:1.1;margin-bottom:5px}
+.speclist dd{font-size:12.5px;color:var(--sand-dark);line-height:1.55}
+
+.uses{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:18px 0 0}
+.uses li{font-size:13.5px;color:var(--sand-dark);line-height:1.6;padding-left:16px;position:relative}
+.uses li::before{content:'';position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%;background:var(--copper)}
+.uses li b{color:var(--cream);font-weight:600;display:block;font-size:13.5px}
+
+.efaq details{border-bottom:1px solid rgba(224,214,202,.1)}
+.efaq summary{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fraunces-vs);font-weight:550;font-size:15px;color:var(--cream);padding:15px 28px 15px 0;cursor:pointer;list-style:none;position:relative;transition:color .3s}
+.efaq summary:hover{color:var(--copper)}
+.efaq summary::-webkit-details-marker{display:none}
+.efaq summary::after{content:'+';position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--copper);transition:transform .3s}
+.efaq details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
+.efaq details p{font-size:13.5px;color:var(--sand-dark);line-height:1.75;padding:0 0 16px;max-width:58ch;margin:0}
+@media (prefers-reduced-motion:reduce){.efaq summary,.efaq summary::after{transition:none}}
 </style>
 </head>
 <body>
@@ -109,6 +150,44 @@ textarea.form-input{min-height:100px;resize:vertical}
   <div class="hero-label">Events</div>
   <h1>Let's Talk About Your Event.</h1>
   <p>An open-air courtyard, a live stage, a bar, and three kitchens all in one spot. Tell us what you're thinking and we'll follow up to talk through the details.</p>
+</div>
+
+<div class="prose">
+
+  <section>
+    <h3>The Space</h3>
+    <h2>One courtyard, and everything around it.</h2>
+    <p>Jefferson House is an open-air venue at 83rd Avenue and Jefferson Street in Downtown Peoria's Arts District. The courtyard is the room &mdash; a covered black-steel canopy over the whole thing, with heaters, fans and misters so it works in February and in July. The kitchens, shops, bar and stage all open onto it.</p>
+    <p>You can take the courtyard on its own, or take the whole property. We're a new venue, so we have real flexibility on how a night gets shaped &mdash; and we'd rather build the layout around your event than hand you a package.</p>
+    <dl class="speclist">
+      <div><dt>300+</dt><dd>Seated in the courtyard, more standing</dd></div>
+      <div><dt>3</dt><dd>Kitchens on site for food, no outside caterer required</dd></div>
+      <div><dt>1</dt><dd>Bar &middot; Stage &middot; Private patio, all opening onto the courtyard</dd></div>
+    </dl>
+    <p>There's a separate patio along Jefferson Street that can be held privately while the rest of the property keeps running &mdash; useful for a rehearsal dinner or a company happy hour that doesn't need the whole courtyard. Public surface lots and street parking sit all around the district, so guests park once and walk.</p>
+  </section>
+
+  <section>
+    <h3>What People Book It For</h3>
+    <h2>Day events and night events, both.</h2>
+    <p>The courtyard reads differently depending on when you use it. Mornings and afternoons it's bright and open and good for markets, showers and family things. After dark the canopy lighting and the stage take over. We're glad to do either, and plenty of events use both halves of the day.</p>
+    <ul class="uses">
+      <li><b>Private parties</b>Birthdays, anniversaries, graduations, retirements</li>
+      <li><b>Company events</b>Holiday parties, team nights, client receptions, offsites</li>
+      <li><b>Receptions &amp; weddings</b>Ceremonies and receptions in the courtyard, or a rehearsal dinner on the patio</li>
+      <li><b>Live music</b>Showcases, album releases, and touring nights on the stage</li>
+      <li><b>Markets &amp; pop-ups</b>Artisan markets and maker days, daytime, in the Arts District</li>
+      <li><b>Community &amp; nonprofit</b>Fundraisers and neighborhood gatherings</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Booking Now</h3>
+    <h2>We open in November 2026, and the calendar is open before that.</h2>
+    <p>We're taking private event and live music inquiries for <strong>late 2026 and 2027</strong> now. Early dates get the most say in how the space gets set up, and we'll be honest with you about what's realistic against the construction schedule.</p>
+    <p>Tell us what you're planning below. A real person reads these and follows up &mdash; there's no automated quote at the end of it.</p>
+  </section>
+
 </div>
 
 <div class="content">
@@ -174,6 +253,41 @@ textarea.form-input{min-height:100px;resize:vertical}
     </div>
   </div>
 
+</div>
+
+<div class="prose">
+  <section class="efaq">
+    <h3>Event Questions</h3>
+    <h2>The things people ask first.</h2>
+    <details>
+      <summary>How many people fit?</summary>
+      <p>The courtyard seats 300+ and holds more standing. The Jefferson Street patio works for smaller groups and can be held privately on its own. We'll size it with you once we know the shape of the event.</p>
+    </details>
+    <details>
+      <summary>Can we get married here?</summary>
+      <p>Yes. The courtyard works for a ceremony and a reception in the same place, and the stage handles the band or the DJ. We're a new venue rather than a wedding factory, so expect a conversation rather than a tier sheet.</p>
+    </details>
+    <details>
+      <summary>Do we have to use your kitchens?</summary>
+      <p>No, but three of them are right here and run by the people who own them, so it's usually the easier and better answer. Tell us what you're imagining and we'll talk it through.</p>
+    </details>
+    <details>
+      <summary>Is it indoors or outdoors?</summary>
+      <p>Open-air, under a covered black-steel canopy, with heaters, fans and misters. It's built for Arizona weather in both directions &mdash; you're outside, but you're not exposed.</p>
+    </details>
+    <details>
+      <summary>Can we book a daytime event?</summary>
+      <p>Absolutely, and we'd like more of them. Mornings and afternoons in the courtyard are bright and open, which suits markets, showers, brunches and family gatherings.</p>
+    </details>
+    <details>
+      <summary>What about parking?</summary>
+      <p>Public surface lots and on-street parking surround the venue throughout Downtown Peoria. Guests park once and walk &mdash; no venue lot to manage, no valet required.</p>
+    </details>
+    <details>
+      <summary>How far out are you booking?</summary>
+      <p>We open in November 2026 and are taking inquiries for late 2026 and 2027. Booking early means more input on how your event gets set up.</p>
+    </details>
+  </section>
 </div>
 
 <script>
