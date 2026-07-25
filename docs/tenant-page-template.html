@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  TENANT PAGE TEMPLATE — not live, not indexed (robots.txt disallows /docs/).
+
+  To publish a tenant page:
+    1. cp docs/tenant-page-template.html tenants/<slug>/index.html
+    2. Replace every {{TOKEN}} below. Tokens are listed in docs/README-tenant-pages.md.
+    3. Add the URL to sitemap.xml.
+    4. Link it from the homepage #lineup section.
+    5. If this is the FIRST tenant page, also create tenants/index.html as the
+       lineup index — a single tenant page with no index is fine, but two or
+       more should have one.
+
+  Do not publish a tenant before Stephen has announced them.
+-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="7Rjr63Afu1lsMQBQN4cx44GEB_zPWYf8d7qT2ccdbZY">
+<title>{{TENANT_NAME}} at Jefferson House — Downtown Peoria, AZ</title>
+<meta name="description" content="{{TENANT_NAME}} — {{TENANT_ONE_LINER}} — opening at Jefferson House, the open-air courtyard at 83rd Avenue and Jefferson Street in Downtown Peoria.">
+<link rel="canonical" href="https://www.jeffersonhouseaz.com/tenants/{{SLUG}}/">
+<meta name="theme-color" content="#0E1525">
+<meta property="og:title" content="{{TENANT_NAME}} at Jefferson House">
+<meta property="og:description" content="{{TENANT_ONE_LINER}}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.jeffersonhouseaz.com/tenants/{{SLUG}}/">
+<meta property="og:image" content="https://www.jeffersonhouseaz.com/img/opt/{{OG_IMAGE}}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="geo.region" content="US-AZ">
+<meta name="geo.placename" content="Peoria">
+<meta name="geo.position" content="33.5795;-112.2378">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/opt/favicon-32.png">
+<link rel="apple-touch-icon" href="/img/opt/apple-touch-icon.png">
+<link rel="stylesheet" href="/fonts/brand.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"BreadcrumbList","itemListElement":[
+{"@type":"ListItem","position":1,"name":"Jefferson House","item":"https://www.jeffersonhouseaz.com/"},
+{"@type":"ListItem","position":2,"name":"The Lineup","item":"https://www.jeffersonhouseaz.com/tenants/"},
+{"@type":"ListItem","position":3,"name":"{{TENANT_NAME}}","item":"https://www.jeffersonhouseaz.com/tenants/{{SLUG}}/"}]},
+{"@type":"{{SCHEMA_TYPE}}","@id":"https://www.jeffersonhouseaz.com/tenants/{{SLUG}}/#business","name":"{{TENANT_NAME}}","description":"{{TENANT_ONE_LINER}}","url":"https://www.jeffersonhouseaz.com/tenants/{{SLUG}}/","image":["https://www.jeffersonhouseaz.com/img/opt/{{OG_IMAGE}}"],"servesCuisine":"{{CUISINE_OR_REMOVE}}","priceRange":"{{PRICE_RANGE}}","address":{"@type":"PostalAddress","streetAddress":"8310 W. Jefferson Street","addressLocality":"Peoria","addressRegion":"AZ","postalCode":"85345","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":33.5795,"longitude":-112.2378},"containedInPlace":{"@id":"https://www.jeffersonhouseaz.com/#venue"},"sameAs":["{{TENANT_INSTAGRAM}}","{{TENANT_WEBSITE}}"],"openingDate":"{{OPENING_DATE_ISO}}"},
+{"@type":"WebPage","@id":"https://www.jeffersonhouseaz.com/tenants/{{SLUG}}/","about":{"@id":"https://www.jeffersonhouseaz.com/tenants/{{SLUG}}/#business"},"isPartOf":{"@id":"https://www.jeffersonhouseaz.com/#org"}}
+]}
+</script>
+<style>
+:root{
+  --navy:#18243C;--navy-dark:#0E1525;
+  --sand:#e0d6ca;--sand-dark:#c8bba9;--cream:#f5f0ea;
+  --copper:#b87333;--copper-light:#d4955a;--slate:#7a7d80;
+  --fraunces-vs:"SOFT" 40,"WONK" 1,"opsz" 144;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--navy-dark);color:var(--sand);line-height:1.6}
+a{color:var(--copper);text-decoration:none}
+a:hover{color:var(--copper-light)}
+:focus-visible{outline:2.5px solid var(--copper);outline-offset:2px;border-radius:4px}
+::selection{background:rgba(184,115,51,0.3);color:var(--cream)}
+
+.header{padding:20px clamp(20px,4vw,48px);border-bottom:1px solid rgba(184,115,51,0.06);display:flex;justify-content:space-between;align-items:center;background:rgba(15,22,35,0.6);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100}
+.header-logo{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fraunces-vs);font-size:17px;font-weight:500;color:var(--sand)}
+.header-back{font-family:'Sansita',sans-serif;font-weight:700;font-size:12px;color:var(--sand-dark);letter-spacing:1px;text-transform:uppercase}
+.header-back:hover{color:var(--copper)}
+
+.hero{text-align:center;padding:clamp(48px,8vw,80px) clamp(20px,4vw,48px) clamp(24px,4vw,36px);max-width:660px;margin:0 auto}
+.hero-label{font-family:'Sansita',sans-serif;font-weight:700;font-size:10px;color:var(--copper);text-transform:uppercase;letter-spacing:4px;margin-bottom:16px}
+.hero h1{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fraunces-vs);font-size:clamp(26px,5vw,38px);font-weight:600;color:var(--sand);line-height:1.15;margin-bottom:14px;text-wrap:balance}
+.hero p{font-size:16px;color:var(--cream);line-height:1.7}
+
+.prose{max-width:660px;margin:0 auto;padding:0 20px 64px}
+.prose section{padding-bottom:clamp(28px,4vw,40px)}
+.prose h2{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:var(--fraunces-vs);font-size:clamp(20px,3.2vw,26px);font-weight:600;color:var(--sand);line-height:1.25;margin-bottom:14px}
+.prose h3{font-family:'Sansita',sans-serif;font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--copper);margin-bottom:12px}
+.prose p{font-size:14.5px;color:var(--sand-dark);line-height:1.8;margin-bottom:14px;max-width:62ch}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--cream);font-weight:600}
+
+.tenantpic{width:100%;border-radius:8px;border:1px solid rgba(184,115,51,0.12);margin-bottom:24px;display:block;height:auto}
+
+.facts{list-style:none;border-top:1px solid rgba(224,214,202,.1);margin-top:18px}
+.facts li{display:grid;grid-template-columns:minmax(110px,160px) 1fr;gap:10px 20px;padding:11px 0;border-bottom:1px solid rgba(224,214,202,.1);font-size:13.5px;line-height:1.65}
+.facts .k{font-family:'Sansita',sans-serif;font-weight:700;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--copper);padding-top:3px}
+.facts .v{color:var(--sand-dark)}
+.facts .v strong{color:var(--cream);font-weight:600}
+@media(max-width:520px){
+  .hero{padding:36px 20px 22px}
+  .facts li{grid-template-columns:1fr;gap:4px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="header-logo" href="/">Jefferson House</a>
+  <a class="header-back" href="/tenants/">&larr; The Lineup</a>
+</div>
+
+<div class="hero">
+  <div class="hero-label">{{TENANT_CATEGORY_LABEL}}</div>
+  <h1>{{TENANT_NAME}}</h1>
+  <p>{{TENANT_ONE_LINER}}</p>
+</div>
+
+<div class="prose">
+
+  <section>
+    <img class="tenantpic" src="/img/opt/{{HERO_IMAGE_1200}}" srcset="/img/opt/{{HERO_IMAGE_800}} 800w, /img/opt/{{HERO_IMAGE_1200}} 1200w" sizes="(max-width:700px) 92vw, 620px" width="{{HERO_W}}" height="{{HERO_H}}" alt="{{HERO_ALT}}" loading="eager" decoding="async">
+    <h3>Who They Are</h3>
+    <h2>{{WHO_HEADLINE}}</h2>
+    <p>{{WHO_PARAGRAPH_1}}</p>
+    <p>{{WHO_PARAGRAPH_2}}</p>
+  </section>
+
+  <section>
+    <h3>What They're Making</h3>
+    <h2>{{WHAT_HEADLINE}}</h2>
+    <p>{{WHAT_PARAGRAPH}}</p>
+  </section>
+
+  <section>
+    <h3>The Details</h3>
+    <h2>Where to find them.</h2>
+    <ul class="facts">
+      <li><span class="k">Where</span><span class="v"><strong>{{SUITE_LABEL}}</strong> at Jefferson House &mdash; 8310 W. Jefferson Street, Peoria, AZ 85345</span></li>
+      <li><span class="k">Opening</span><span class="v">{{OPENING_HUMAN}}</span></li>
+      <li><span class="k">Type</span><span class="v">{{TENANT_TYPE_HUMAN}}</span></li>
+      <li><span class="k">Find them</span><span class="v"><a href="{{TENANT_INSTAGRAM}}" target="_blank" rel="noopener">{{TENANT_INSTAGRAM_HANDLE}}</a>{{OPTIONAL_WEBSITE_LINK}}</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Getting Here</h3>
+    <h2>One courtyard, park once.</h2>
+    <p>{{TENANT_NAME}} sits inside Jefferson House, the open-air courtyard at 83rd Avenue and Jefferson Street in Downtown Peoria's Arts District. Public lots and street parking surround the block. See <a href="/visit/">hours, parking and accessibility</a>, or <a href="/tenants/">the rest of the lineup</a>.</p>
+  </section>
+
+</div>
+
+<script>try{new Image().src="/api/jh-digest/pixel.gif?p="+encodeURIComponent(location.pathname||"/")+"&t="+Date.now();}catch(e){}</script>
+</body>
+</html>

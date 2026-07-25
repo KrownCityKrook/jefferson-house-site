@@ -4,5 +4,6 @@ Disallow: /calibrate.html
 Disallow: /apply
 Disallow: /lease-editor/
 Disallow: /api/
+Disallow: /docs/
 
 Sitemap: https://www.jeffersonhouseaz.com/sitemap.xml
