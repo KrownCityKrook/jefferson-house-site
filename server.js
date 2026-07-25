@@ -38,9 +38,16 @@ try { compression = require('compression'); app.use(compression()); } catch (e) 
 app.use(express.static(path.join(__dirname), {
   maxAge: '1h',
   setHeaders: (res, filePath) => {
-    // No cache on HTML so updates show immediately
+    // Always revalidate HTML so updates show immediately, but allow storing
+    // so repeat visits can 304 off the ETag instead of refetching the body.
     if (filePath.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Cache-Control', 'public, no-cache');
+    }
+    // express.static -> send -> mime@1.6.0 predates AVIF and labels it
+    // application/octet-stream, which makes Chrome discard the hero's
+    // <link rel=preload type="image/avif">. Set it ourselves.
+    if (filePath.endsWith('.avif')) {
+      res.setHeader('Content-Type', 'image/avif');
     }
     // Long cache on large assets
     if (filePath.endsWith('.glb')) {
