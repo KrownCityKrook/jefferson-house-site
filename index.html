@@ -46,6 +46,7 @@
 {"@type":"Question","name":"Where do I park?","acceptedAnswer":{"@type":"Answer","text":"Public surface lots and on-street parking sit all around us throughout Downtown Peoria. Park once and walk the district."}},
 {"@type":"Question","name":"Can I book an event before you open?","acceptedAnswer":{"@type":"Answer","text":"Yes — we're taking private event and live music inquiries for late 2026 and 2027 now. Tell us about your event at jeffersonhouseaz.com/events/, or see what we're doing with the stage at jeffersonhouseaz.com/live-music/."}},
 {"@type":"Question","name":"How do I lease a space?","acceptedAnswer":{"@type":"Answer","text":"Three turnkey kitchen suites at 640 SF and six retail & eatery spots from 160–440 SF are leasing. Apply at jeffersonhouseaz.com/apply or book an intro meeting with the team."}},
+{"@type":"Question","name":"Can I do a pop-up instead of a lease?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Green Room, our small air-conditioned room, is available for one-day and weekend pop-ups. It carries a daily fee and is subject to availability. Request dates at jeffersonhouseaz.com/pop-up."}},
 {"@type":"Question","name":"Are you hiring?","acceptedAnswer":{"@type":"Answer","text":"We will be staffing up ahead of opening — bar, floor, security and management. See positions and apply at jeffersonhouseaz.com/jobs/."}}
 ]}]}
 </script>
@@ -307,6 +308,17 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 .lease-cta{display:flex;gap:16px;flex-wrap:wrap;margin-top:clamp(2rem,4vw,3rem);max-width:1060px;margin-left:auto;margin-right:auto}
 
 /* SUNSET transition */
+/* POP-UPS — one room, a day or a weekend, no lease. Sits on plain --paper so it
+   reads as its own block against the golden-hour Leasing section above it. */
+.popup{background:var(--paper);padding:clamp(4.5rem,9vw,7rem) clamp(1.5rem,5vw,4rem)}
+.popup-inner{max-width:640px;margin:0 auto;text-align:center}
+.popup-inner h2{font-size:clamp(2rem,4.2vw,3.4rem);margin:18px 0 14px}
+.popup-lede{font-size:15px;color:var(--ink-soft);line-height:1.75;margin-bottom:clamp(2rem,4vw,2.8rem)}
+.popup-card{text-align:left}
+.ls-type.popup-type{color:var(--sun)}
+.popup-note{font-size:13.5px;color:var(--ink-soft);line-height:1.7;margin-top:clamp(1.4rem,3vw,2rem)}
+.popup-cta{margin-top:clamp(1.6rem,3vw,2.2rem)}
+
 .sunset{height:10px;background:var(--copper)}
 
 /* EVENTS — dusk */
@@ -866,6 +878,31 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
   </div>
 </section>
 
+<!-- POP-UPS -->
+<section class="popup" id="popup" aria-labelledby="popup-h">
+  <div class="popup-inner">
+    <p class="eyebrow a" data-d="u">No Lease Required</p>
+    <h2 id="popup-h" class="display a" data-d="u">Pop up with us.</h2>
+    <p class="popup-lede a" data-d="u">Not ready to sign for a year &mdash; or you just want a weekend? We keep one small indoor room for short stints. Take it for a day, take it for a weekend, bring your tables and your stock, and trade alongside the shops.</p>
+    <article class="ls-card popup-card a" data-d="u">
+      <div class="ls-body">
+        <span class="ls-type popup-type">Short Stint</span>
+        <h3>The Green Room</h3>
+        <p>Our air-conditioned room off the courtyard &mdash; comfortable for about twenty-five people, with a display screen and the option to add food and drink. Built for makers, small-batch food, trunk shows and workshops, and for anyone who would rather not spend a July afternoon in the sun.</p>
+        <div class="ls-meta">
+          <div><div class="ls-ml">Size</div><div class="ls-mv">227 SF</div></div>
+          <div><div class="ls-ml">Term</div><div class="ls-mv">Day or Weekend</div></div>
+          <div><div class="ls-ml">Rate</div><div class="ls-mv">Daily Fee</div></div>
+        </div>
+      </div>
+    </article>
+    <p class="popup-note a" data-d="u">Thinking outdoors instead &mdash; live music, a class, a market day? Ask on the same form. Dates and the daily rate come back by email; the room is subject to availability.</p>
+    <div class="popup-cta a" data-d="u">
+      <a href="/pop-up" class="btn btn-copper">Request a Pop-Up</a>
+    </div>
+  </div>
+</section>
+
 <!-- SUNSET -->
 <div class="sunset" aria-hidden="true"></div>
 
@@ -958,6 +995,10 @@ body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
         <details>
           <summary>How do I lease a space?</summary>
           <p>Three turnkey kitchen suites (640 SF) and six retail &amp; eatery spots (160–440 SF) are leasing. <a href="/apply">Apply here</a> or <a href="/book/">book an intro meeting</a> with the team.</p>
+        </details>
+        <details>
+          <summary>Can I do a pop-up instead of a lease?</summary>
+          <p>Yes — we keep the Green Room, our small air-conditioned room, for one-day and weekend stints. It carries a daily fee and is subject to availability. <a href="/pop-up">Tell us what you have in mind</a>.</p>
         </details>
         <details>
           <summary>Are you hiring?</summary>
