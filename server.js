@@ -28,6 +28,8 @@ function proxyToHub(req, res) {
   req.pipe(proxyReq);
 }
 app.use('/apply', proxyToHub);
+app.use('/pop-up', proxyToHub);
+app.use('/brand', proxyToHub);   // the hub's brand marks, used by /pop-up
 app.use('/api', proxyToHub);
 app.use('/lease-editor', proxyToHub);
 
